@@ -1,0 +1,28 @@
+{
+    "name": "com.individualkex.kexinput",
+    "displayName": "KexInput",
+    "version": "0.1.0",
+    "description": "Input handling module for Unity DOTS ECS projects",
+    "unity": "6000.0",
+    "keywords": [
+        "input",
+        "dots",
+        "ecs",
+        "player"
+    ],
+    "author": {
+        "name": "IndividualKex",
+        "url": "https://github.com/IndividualKex"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IndividualKex/KexPlayer.git",
+        "path": "Assets/Runtime/KexInput"
+    },
+    "dependencies": {
+        "com.unity.entities": "1.3.0",
+        "com.unity.inputsystem": "1.11.0",
+        "com.unity.burst": "1.8.0",
+        "com.unity.collections": "2.5.0"
+    }
+}

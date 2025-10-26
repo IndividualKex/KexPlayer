@@ -23,23 +23,28 @@ Unity DOTS (ECS) first-person player controller system with modular input, camer
 ```
 KexPlayer/
 ├── CLAUDE.md  # Global context (Tier 0)
+├── README.md  # Installation instructions for git packages
 ├── Assets/  # Unity assets
 │   ├── Runtime/  # Runtime code (C# scripts)
-│   │   ├── KexInput/  # Input handling module
+│   │   ├── KexInput/  # Input handling module (installable package)
 │   │   │   ├── context.md
+│   │   │   ├── package.json  # Unity package manifest
 │   │   │   ├── Components/  # Input components
 │   │   │   └── Systems/  # Input systems
-│   │   ├── KexCamera/  # Camera module
+│   │   ├── KexCamera/  # Camera module (installable package)
 │   │   │   ├── context.md
+│   │   │   ├── package.json  # Unity package manifest
 │   │   │   ├── Components/  # Camera components
 │   │   │   ├── Systems/  # Camera systems
 │   │   │   └── Authoring/  # Camera authoring/bootstrap
-│   │   ├── KexCharacter/  # Character controller module
+│   │   ├── KexCharacter/  # Character controller module (installable package)
 │   │   │   ├── context.md
+│   │   │   ├── package.json  # Unity package manifest
 │   │   │   ├── Components/  # Character components
 │   │   │   └── Systems/  # Character physics/update systems
-│   │   └── KexPlayer/  # Player module
+│   │   └── KexPlayer/  # Player module (installable package)
 │   │       ├── context.md
+│   │       ├── package.json  # Unity package manifest
 │   │       ├── Components/  # Player components
 │   │       ├── Systems/  # Player systems
 │   │       └── Authoring/  # Player authoring
@@ -81,10 +86,18 @@ KexPlayer/
 - Unity Settings: ProjectSettings/ (Unity project configuration)
 - Input Actions: Assets/InputSystem_Actions.inputactions (Unity Input System)
 - Assembly Definitions: *.asmdef files in each module (compile-time separation)
+- Package Manifests: package.json in each module (git package distribution)
 
 ## Where to add code
 
 - New component data → Assets/Runtime/[Module]/Components/
 - New system logic → Assets/Runtime/[Module]/Systems/
 - Editor/authoring → Assets/Runtime/[Module]/Authoring/
-- New module → Assets/Runtime/[ModuleName]/ (follow existing structure)
+- New module → Assets/Runtime/[ModuleName]/ (follow existing structure, include package.json)
+
+## Package Distribution
+
+Each module (KexInput, KexCamera, KexCharacter, KexPlayer) is an installable Unity package via git URL:
+- Install via Package Manager: `https://github.com/IndividualKex/KexPlayer.git?path=Assets/Runtime/[Module]`
+- Or add to Packages/manifest.json
+- KexPlayer requires KexInput, KexCamera, KexCharacter (manual installation, Unity doesn't support git dependencies between packages)

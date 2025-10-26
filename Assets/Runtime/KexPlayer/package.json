@@ -1,0 +1,31 @@
+{
+    "name": "com.individualkex.kexplayer",
+    "displayName": "KexPlayer",
+    "version": "0.1.0",
+    "description": "Complete first-person player controller system for Unity DOTS ECS. Requires KexInput, KexCamera, and KexCharacter packages (install via git URL - see README).",
+    "unity": "6000.0",
+    "keywords": [
+        "player",
+        "controller",
+        "dots",
+        "ecs",
+        "first-person"
+    ],
+    "author": {
+        "name": "IndividualKex",
+        "url": "https://github.com/IndividualKex"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IndividualKex/KexPlayer.git",
+        "path": "Assets/Runtime/KexPlayer"
+    },
+    "dependencies": {
+        "com.unity.entities": "1.3.0",
+        "com.unity.burst": "1.8.0",
+        "com.unity.collections": "2.5.0",
+        "com.unity.physics": "1.3.0",
+        "com.unity.mathematics": "1.3.0",
+        "com.unity.charactercontroller": "1.2.0"
+    }
+}
