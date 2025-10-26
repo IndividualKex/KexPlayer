@@ -1,8 +1,8 @@
 {
     "name": "com.individualkex.kexplayer",
     "displayName": "KexPlayer",
-    "version": "0.1.0",
-    "description": "Complete first-person player controller system for Unity DOTS ECS. Requires KexInput, KexCamera, and KexCharacter packages (install via git URL - see README).",
+    "version": "0.1.1",
+    "description": "Complete first-person player controller system for Unity DOTS ECS..",
     "unity": "6000.0",
     "keywords": [
         "player",

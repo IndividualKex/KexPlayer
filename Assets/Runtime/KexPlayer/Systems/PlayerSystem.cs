@@ -15,14 +15,13 @@ namespace KexPlayer {
         public void OnUpdate(ref SystemState state) {
             double currentTime = SystemAPI.Time.ElapsedTime;
 
-            foreach (var (characterConfig, characterInput, camera, input) in SystemAPI
-                .Query<RefRO<CharacterConfig>, RefRW<CharacterInput>, RefRW<Camera>, RefRO<Input>>()
+            foreach (var (config, characterInput, camera, input) in SystemAPI
+                .Query<CharacterConfig, RefRW<CharacterInput>, RefRW<Camera>, RefRW<Input>>()
                 .WithAll<Player, Simulate>()
             ) {
-                ref readonly CharacterConfig configRef = ref characterConfig.ValueRO;
                 ref CharacterInput inputCharacterRef = ref characterInput.ValueRW;
                 ref Camera cameraRef = ref camera.ValueRW;
-                ref readonly Input inputRef = ref input.ValueRO;
+                ref Input inputRef = ref input.ValueRW;
 
                 float2 lookDelta = inputRef.Look * cameraRef.LookSensitivity;
 
@@ -32,8 +31,9 @@ namespace KexPlayer {
 
                 inputCharacterRef.MovementInput = inputRef.Move;
 
-                if (inputRef.Jump.WasJustPressed(currentTime, configRef.CoyoteTimeDuration)) {
+                if (inputRef.Jump.WasJustPressed(currentTime, config.CoyoteTimeDuration)) {
                     inputCharacterRef.JumpRequestTime = currentTime;
+                    inputRef.Jump.Consume();
                 }
             }
         }
