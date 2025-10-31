@@ -12,8 +12,8 @@
   <Project Path="Unity.PerformanceTesting.Editor.csproj" />
   <Project Path="Unity.Burst.csproj" />
   <Project Path="Unity.VisualScripting.Flow.Editor.csproj" />
-  <Project Path="Unity.VisualStudio.Editor.csproj" />
   <Project Path="Unity.InputSystem.csproj" />
+  <Project Path="Unity.VisualStudio.Editor.csproj" />
   <Project Path="Unity.Entities.csproj" />
   <Project Path="Unity.Scenes.csproj" />
   <Project Path="Unity.Entities.Editor.csproj" />
@@ -30,6 +30,7 @@
   <Project Path="Unity.Scenes.Editor.csproj" />
   <Project Path="Unity.Serialization.csproj" />
   <Project Path="Unity.Burst.Editor.csproj" />
+  <Project Path="KexInteract.csproj" />
   <Project Path="Unity.VisualScripting.State.csproj" />
   <Project Path="Unity.InternalAPIEditorBridge.002.csproj" />
   <Project Path="Unity.AI.Navigation.Updater.csproj" />
@@ -50,8 +51,8 @@
   <Project Path="KexCamera.csproj" />
   <Project Path="Unity.Transforms.csproj" />
   <Project Path="Unity.Entities.Build.csproj" />
-  <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.CollabProxy.Editor.csproj" />
+  <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
   <Project Path="Unity.Profiling.Core.csproj" />
   <Project Path="KexInput.csproj" />

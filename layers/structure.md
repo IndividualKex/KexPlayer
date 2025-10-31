@@ -42,6 +42,12 @@ KexPlayer/
 │   │   │   ├── package.json  # Unity package manifest
 │   │   │   ├── Components/  # Character components
 │   │   │   └── Systems/  # Character physics/update systems
+│   │   ├── KexInteract/  # Interaction module (installable package)
+│   │   │   ├── context.md
+│   │   │   ├── package.json  # Unity package manifest
+│   │   │   ├── Components/  # Interaction components
+│   │   │   ├── Systems/  # Interaction systems
+│   │   │   └── Authoring/  # Interaction authoring
 │   │   └── KexPlayer/  # Player module (installable package)
 │   │       ├── context.md
 │   │       ├── package.json  # Unity package manifest
@@ -97,7 +103,8 @@ KexPlayer/
 
 ## Package Distribution
 
-Each module (KexInput, KexCamera, KexCharacter, KexPlayer) is an installable Unity package via git URL:
+Each module (KexInput, KexCamera, KexCharacter, KexInteract, KexPlayer) is an installable Unity package via git URL:
 - Install via Package Manager: `https://github.com/IndividualKex/KexPlayer.git?path=Assets/Runtime/[Module]`
 - Or add to Packages/manifest.json
 - KexPlayer requires KexInput, KexCamera, KexCharacter (manual installation, Unity doesn't support git dependencies between packages)
+- KexInteract requires KexInput, KexCamera, KexCharacter (manual installation)

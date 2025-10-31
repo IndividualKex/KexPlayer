@@ -1,0 +1,31 @@
+{
+    "name": "com.individualkex.kexinteract",
+    "displayName": "KexInteract",
+    "version": "0.1.0",
+    "description": "Generic raycast-based interaction system for Unity DOTS ECS projects",
+    "unity": "6000.0",
+    "keywords": [
+        "interaction",
+        "raycast",
+        "dots",
+        "ecs",
+        "physics"
+    ],
+    "author": {
+        "name": "IndividualKex",
+        "url": "https://github.com/IndividualKex"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/IndividualKex/KexPlayer.git",
+        "path": "Assets/Runtime/KexInteract"
+    },
+    "dependencies": {
+        "com.unity.entities": "1.3.0",
+        "com.unity.burst": "1.8.0",
+        "com.unity.collections": "2.5.0",
+        "com.unity.physics": "1.3.0",
+        "com.unity.mathematics": "1.3.0",
+        "com.unity.transforms": "2.0.0"
+    }
+}
