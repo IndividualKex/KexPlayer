@@ -1,0 +1,13 @@
+{
+  "name": "com.individualkex.kexoutline",
+  "displayName": "KexOutline",
+  "version": "0.1.0",
+  "description": "Visual outline system for interactable objects in Unity DOTS ECS",
+  "unity": "2023.3",
+  "dependencies": {
+    "com.unity.entities": "1.3.0",
+    "com.unity.entities.graphics": "1.3.0",
+    "com.unity.burst": "1.8.0",
+    "com.unity.collections": "2.5.0"
+  }
+}

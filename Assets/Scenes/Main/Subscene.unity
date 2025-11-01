@@ -255,6 +255,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39fb5c40602e9045b35c454c513fedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: KexInteract::KexInteract.InteracterAuthoring
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &984174468
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,6 +370,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1640503685
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1640503687}
+  - component: {fileID: 1640503686}
+  m_Layer: 0
+  m_Name: OutlineConfig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1640503686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640503685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f9a42b316aa14c4d9f2ebd2425d055c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: KexOutline::KexOutline.OutlineConfigAuthoring
+  OutlineLayer: 8
+  DefaultLayer: 0
+--- !u!4 &1640503687
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640503685}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1797512168
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,10 +425,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1797512173}
+  - component: {fileID: 1797512169}
+  - component: {fileID: 1797512174}
   - component: {fileID: 1797512172}
   - component: {fileID: 1797512171}
   - component: {fileID: 1797512170}
-  - component: {fileID: 1797512169}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -399,7 +449,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e112db68bc34fa43a8462a6200fbbb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: KexInteract::KexInteract.InteractableAuthoring
-  Renderer: {fileID: 1797512168}
   CanInteract: 1
   CanAltInteract: 0
   CanPush: 0
@@ -497,10 +546,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1797512174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797512168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9263c5ded97945c42aa4dde9ce73a7f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: KexOutline::KexOutline.OutlineRendererAuthoring
+  Renderer: {fileID: 1797512168}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1640503687}
   - {fileID: 984174472}
   - {fileID: 849367767}
   - {fileID: 1797512173}

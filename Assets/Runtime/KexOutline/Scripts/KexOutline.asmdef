@@ -1,0 +1,21 @@
+{
+    "name": "KexOutline",
+    "rootNamespace": "KexOutline",
+    "references": [
+        "Unity.Entities",
+        "Unity.Entities.Graphics",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Entities.Hybrid",
+        "KexInteract"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

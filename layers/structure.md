@@ -23,7 +23,6 @@ Unity DOTS (ECS) first-person player controller system with modular input, camer
 ```
 KexPlayer/
 ├── CLAUDE.md  # Global context (Tier 0)
-├── README.md  # Installation instructions for git packages
 ├── Assets/  # Unity assets
 │   ├── Runtime/  # Runtime code (C# scripts)
 │   │   ├── KexInput/  # Input handling module (installable package)
@@ -48,6 +47,12 @@ KexPlayer/
 │   │   │   ├── Components/  # Interaction components
 │   │   │   ├── Systems/  # Interaction systems
 │   │   │   └── Authoring/  # Interaction authoring
+│   │   ├── KexOutline/  # Outline rendering module (installable package)
+│   │   │   ├── context.md
+│   │   │   ├── package.json  # Unity package manifest
+│   │   │   ├── Components/  # Outline components
+│   │   │   ├── Systems/  # Outline rendering systems
+│   │   │   └── Authoring/  # Outline authoring
 │   │   └── KexPlayer/  # Player module (installable package)
 │   │       ├── context.md
 │   │       ├── package.json  # Unity package manifest
@@ -103,8 +108,9 @@ KexPlayer/
 
 ## Package Distribution
 
-Each module (KexInput, KexCamera, KexCharacter, KexInteract, KexPlayer) is an installable Unity package via git URL:
+Each module (KexInput, KexCamera, KexCharacter, KexInteract, KexOutline, KexPlayer) is an installable Unity package via git URL:
 - Install via Package Manager: `https://github.com/IndividualKex/KexPlayer.git?path=Assets/Runtime/[Module]`
 - Or add to Packages/manifest.json
 - KexPlayer requires KexInput, KexCamera, KexCharacter (manual installation, Unity doesn't support git dependencies between packages)
 - KexInteract requires KexInput, KexCamera, KexCharacter (manual installation)
+- KexOutline requires KexInteract (manual installation)

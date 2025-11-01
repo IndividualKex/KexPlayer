@@ -28,6 +28,7 @@
   <Project Path="Unity.Entities.Hybrid.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
   <Project Path="Unity.Scenes.Editor.csproj" />
+  <Project Path="KexOutline.csproj" />
   <Project Path="Unity.Serialization.csproj" />
   <Project Path="Unity.Burst.Editor.csproj" />
   <Project Path="KexInteract.csproj" />
