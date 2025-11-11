@@ -1,12 +1,13 @@
 # Project Structure
 
-Unity DOTS (ECS) first-person player controller system with modular input, camera, character physics, and player components
+Unity DOTS (ECS) first-person player controller system with integrated input, camera, and character physics
 
 ## Stack
 
 - Runtime: Unity 6000.2.6f2
 - Language: C# (Unity DOTS/ECS)
 - Framework: Unity DOTS (Entities, Physics, Burst, Collections)
+- Networking: Unity Netcode for Entities (1.8.0)
 - Build: Unity Build System
 - Testing: Unity Test Framework
 - Version Control: PlasticSCM/Unity Collab
@@ -25,40 +26,50 @@ KexPlayer/
 ├── CLAUDE.md  # Global context (Tier 0)
 ├── Assets/  # Unity assets
 │   ├── Runtime/  # Runtime code (C# scripts)
-│   │   ├── KexInput/  # Input handling module (installable package)
+│   │   ├── KexPlayer/  # Complete player controller (installable package)
 │   │   │   ├── context.md
 │   │   │   ├── package.json  # Unity package manifest
-│   │   │   ├── Components/  # Input components
-│   │   │   └── Systems/  # Input systems
-│   │   ├── KexCamera/  # Camera module (installable package)
-│   │   │   ├── context.md
-│   │   │   ├── package.json  # Unity package manifest
-│   │   │   ├── Components/  # Camera components
-│   │   │   ├── Systems/  # Camera systems
-│   │   │   └── Authoring/  # Camera authoring/bootstrap
-│   │   ├── KexCharacter/  # Character controller module (installable package)
-│   │   │   ├── context.md
-│   │   │   ├── package.json  # Unity package manifest
-│   │   │   ├── Components/  # Character components
-│   │   │   └── Systems/  # Character physics/update systems
+│   │   │   ├── KexPlayer.asmdef  # Assembly definition
+│   │   │   ├── Components/  # All player components
+│   │   │   │   ├── Player.cs  # Player tag
+│   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
+│   │   │   │   ├── Camera.cs  # Camera data
+│   │   │   │   ├── CameraShake.cs  # Camera shake
+│   │   │   │   ├── CameraOverride.cs  # Camera override
+│   │   │   │   ├── CharacterConfig.cs  # Character configuration
+│   │   │   │   └── CharacterState.cs  # Character state
+│   │   │   ├── Systems/  # All player systems
+│   │   │   │   ├── InputSystem.cs  # Input capture
+│   │   │   │   ├── CameraSystem.cs  # Camera positioning
+│   │   │   │   ├── CameraShakeSystem.cs  # Camera shake
+│   │   │   │   ├── CameraApplySystem.cs  # Apply to Unity Camera
+│   │   │   │   ├── CharacterPhysicsSystem.cs  # Physics update
+│   │   │   │   └── CharacterVariableUpdateSystem.cs  # Rotation update
+│   │   │   └── Authoring/  # Player authoring
+│   │   │       ├── PlayerAuthoring.cs  # Main player setup
+│   │   │       ├── CameraBootstrap.cs  # Scene initialization
+│   │   │       └── CameraOverrideAuthoring.cs  # Camera overrides
 │   │   ├── KexInteract/  # Interaction module (installable package)
 │   │   │   ├── context.md
 │   │   │   ├── package.json  # Unity package manifest
+│   │   │   ├── Enums.cs  # InteractionMask, ControlMask
 │   │   │   ├── Components/  # Interaction components
 │   │   │   ├── Systems/  # Interaction systems
 │   │   │   └── Authoring/  # Interaction authoring
-│   │   ├── KexOutline/  # Outline rendering module (installable package)
-│   │   │   ├── context.md
-│   │   │   ├── package.json  # Unity package manifest
-│   │   │   ├── Components/  # Outline components
-│   │   │   ├── Systems/  # Outline rendering systems
-│   │   │   └── Authoring/  # Outline authoring
-│   │   └── KexPlayer/  # Player module (installable package)
+│   │   └── KexOutline/  # Outline rendering module (installable package)
 │   │       ├── context.md
 │   │       ├── package.json  # Unity package manifest
-│   │       ├── Components/  # Player components
-│   │       ├── Systems/  # Player systems
-│   │       └── Authoring/  # Player authoring
+│   │       ├── Components/  # Outline components
+│   │       ├── Systems/  # Outline rendering systems
+│   │       └── Authoring/  # Outline authoring
+│   ├── Scripts/  # Project-specific code
+│   │   └── Netcode/  # Multiplayer infrastructure (project-level)
+│   │       ├── context.md
+│   │       ├── Bootstrap/  # Client-server world creation
+│   │       ├── Components/  # Netcode-specific components
+│   │       ├── Authoring/  # Netcode authoring
+│   │       └── Systems/  # Connection and spawn systems
+│   ├── Prefabs/  # Unity prefabs
 │   ├── Scenes/  # Unity scenes
 │   ├── Settings/  # Project settings
 │   └── InputSystem_Actions.inputactions  # Input actions
@@ -74,19 +85,19 @@ KexPlayer/
 
 - **Pattern**: ECS (Entity Component System)
 - **Layers**: Components (data) → Systems (logic) → Authoring (editor bindings)
-- **Flow**: Input → Character Physics → Camera → Rendering
-- **Modules**: KexInput → KexCharacter → KexPlayer → KexCamera
+- **Flow**: Input (GhostInputSystemGroup) → Character Physics (PredictedFixedStepSimulationSystemGroup) → Camera (PresentationSystemGroup)
+- **Modules**: KexPlayer (complete player controller), KexInteract (requires KexPlayer), KexOutline (requires KexInteract)
 
 ## Entry points
 
-- Bootstrap: Assets/Runtime/KexCamera/Authoring/CameraBootstrap.cs (scene initialization)
+- Bootstrap: Assets/Runtime/KexPlayer/Authoring/CameraBootstrap.cs (scene initialization)
 - Player Authoring: Assets/Runtime/KexPlayer/Authoring/PlayerAuthoring.cs (player entity setup)
-- Input System: Assets/Runtime/KexInput/Systems/InputSystem.cs (input processing entry)
-- Character Physics: Assets/Runtime/KexCharacter/Systems/CharacterPhysicsSystem.cs (physics update)
+- Input System: Assets/Runtime/KexPlayer/Systems/InputSystem.cs (input + view processing entry)
+- Character Physics: Assets/Runtime/KexPlayer/Systems/CharacterPhysicsSystem.cs (physics update)
 
 ## Naming Conventions
 
-- Files: PascalCase (CharacterState.cs, PlayerSystem.cs)
+- Files: PascalCase (CharacterState.cs, InputSystem.cs)
 - Directories: PascalCase (KexPlayer, Components, Systems)
 - Namespaces: Match directory name (namespace KexPlayer)
 - Components: PascalCase struct implementing IComponentData
@@ -97,7 +108,8 @@ KexPlayer/
 - Unity Settings: ProjectSettings/ (Unity project configuration)
 - Input Actions: Assets/InputSystem_Actions.inputactions (Unity Input System)
 - Assembly Definitions: *.asmdef files in each module (compile-time separation)
-- Package Manifests: package.json in each module (git package distribution)
+- Package Manifests: package.json in each module (git package distribution, all include netcode 1.8.0)
+- Netcode Bootstrap: Assets/Scripts/Netcode/Bootstrap/AutoConnectBootstrap.cs (multiplayer worlds)
 
 ## Where to add code
 
@@ -108,9 +120,11 @@ KexPlayer/
 
 ## Package Distribution
 
-Each module (KexInput, KexCamera, KexCharacter, KexInteract, KexOutline, KexPlayer) is an installable Unity package via git URL:
+Each module (KexPlayer, KexInteract, KexOutline) is an installable Unity package via git URL:
 - Install via Package Manager: `https://github.com/IndividualKex/KexPlayer.git?path=Assets/Runtime/[Module]`
 - Or add to Packages/manifest.json
-- KexPlayer requires KexInput, KexCamera, KexCharacter (manual installation, Unity doesn't support git dependencies between packages)
-- KexInteract requires KexInput, KexCamera, KexCharacter (manual installation)
+- All packages include Unity Netcode for Entities (1.8.0) dependency
+- KexPlayer is a complete player controller with input, camera, and character physics (v0.2.0)
+- KexInteract requires KexPlayer (manual installation, Unity doesn't support git dependencies between packages)
 - KexOutline requires KexInteract (manual installation)
+- Multiplayer support requires project-level netcode setup (Assets/Scripts/Netcode/)

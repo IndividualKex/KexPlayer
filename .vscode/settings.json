@@ -67,5 +67,8 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "KexPlayer.slnx"
+    "dotnet.defaultSolution": "KexPlayer.slnx",
+    "dotrush.roslyn.projectOrSolutionFiles": [
+        "c:\\Users\\dylan\\Documents\\Games\\KexPlayer\\KexPlayer.slnx"
+    ]
 }

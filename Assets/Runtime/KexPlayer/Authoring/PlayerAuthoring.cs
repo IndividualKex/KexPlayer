@@ -2,7 +2,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using Unity.CharacterController;
-using KexCharacter;
 
 namespace KexPlayer {
     public class PlayerAuthoring : MonoBehaviour {
@@ -48,14 +47,10 @@ namespace KexPlayer {
                 AddComponent(entity, new CharacterState {
                     LastGroundedTime = 0,
                 });
-                AddComponent(entity, new CharacterInput {
-                    MovementInput = float2.zero,
-                    YawRotationRadians = 0f,
-                    JumpRequestTime = 0,
-                });
                 AddComponent<Player>(entity);
-                AddComponent<KexInput.Input>(entity);
-                AddComponent(entity, new KexCamera.Camera {
+                AddComponent<Input>(entity);
+                AddComponent(entity, new Camera {
+                    YawDegrees = 0f,
                     PitchDegrees = 0f,
                     MinPitch = authoring.MinPitch,
                     MaxPitch = authoring.MaxPitch,

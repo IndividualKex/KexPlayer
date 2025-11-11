@@ -4,7 +4,6 @@ namespace KexInteract {
     public struct InteractEvent : IComponentData {
         public Entity Target;
         public Entity Sender;
-        public byte ButtonIndex;
-        public InteractInputType InputType;
+        public byte Interaction;
     }
 }

@@ -1,15 +1,19 @@
 {
     "name": "com.individualkex.kexplayer",
     "displayName": "KexPlayer",
-    "version": "0.1.1",
-    "description": "Complete first-person player controller system for Unity DOTS ECS..",
+    "version": "0.2.0",
+    "description": "Complete first-person player controller system for Unity DOTS ECS with input, camera, and character physics",
     "unity": "6000.0",
     "keywords": [
         "player",
         "controller",
         "dots",
         "ecs",
-        "first-person"
+        "first-person",
+        "input",
+        "camera",
+        "character",
+        "physics"
     ],
     "author": {
         "name": "IndividualKex",
@@ -26,6 +30,8 @@
         "com.unity.collections": "2.5.0",
         "com.unity.physics": "1.3.0",
         "com.unity.mathematics": "1.3.0",
-        "com.unity.charactercontroller": "1.2.0"
+        "com.unity.charactercontroller": "1.2.0",
+        "com.unity.netcode": "1.8.0",
+        "com.unity.inputsystem": "1.11.0"
     }
 }

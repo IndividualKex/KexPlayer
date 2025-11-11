@@ -10,9 +10,8 @@
         "Unity.Entities.Hybrid",
         "Unity.Collections",
         "Unity.CharacterController",
-        "KexInput",
-        "KexCamera",
-        "KexCharacter"
+        "Unity.NetCode",
+        "KexPlayer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
