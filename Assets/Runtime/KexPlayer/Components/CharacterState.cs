@@ -6,5 +6,7 @@ namespace KexPlayer {
     public struct CharacterState : IComponentData {
         [GhostField]
         public double LastGroundedTime;
+        [GhostField]
+        public float BodyYawDegrees;
     }
 }

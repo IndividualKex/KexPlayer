@@ -4,32 +4,31 @@ using Unity.CharacterController;
 using Unity.Burst.Intrinsics;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [BurstCompile]
     public partial struct CharacterVariableUpdateSystem : ISystem {
-        private EntityQuery _characterQuery;
         private UpdateContext _context;
         private KinematicCharacterUpdateContext _baseContext;
 
         public void OnCreate(ref SystemState state) {
-            _characterQuery = KinematicCharacterUtilities.GetBaseCharacterQueryBuilder()
-                .WithAll<CharacterConfig, CharacterState, Input>()
-                .Build(ref state);
-
             _context = new UpdateContext();
             _context.OnSystemCreate(ref state);
             _baseContext = new KinematicCharacterUpdateContext();
             _baseContext.OnSystemCreate(ref state);
 
-            state.RequireForUpdate(_characterQuery);
+            var query = KinematicCharacterUtilities.GetBaseCharacterQueryBuilder()
+                .WithAll<CharacterConfig, CharacterState, Input>()
+                .Build(ref state);
+            state.RequireForUpdate(query);
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state) {
+            var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
             _context.OnSystemUpdate(ref state);
-            _baseContext.OnSystemUpdate(ref state, SystemAPI.Time, SystemAPI.GetSingleton<Unity.Physics.PhysicsWorldSingleton>());
+            _baseContext.OnSystemUpdate(ref state, SystemAPI.Time, physicsWorldSingleton);
 
             new CharacterVariableUpdateJob {
                 Context = _context,
@@ -45,12 +44,11 @@ namespace KexPlayer {
 
             public void Execute(
                 KinematicCharacterAspect kinematic,
-                RefRW<Input> input
+                in CharacterState state
             ) {
                 ref quaternion rotationRef = ref kinematic.LocalTransform.ValueRW.Rotation;
-                ref readonly Input inputRef = ref input.ValueRO;
 
-                rotationRef = quaternion.Euler(0f, math.radians(inputRef.ViewYawDegrees), 0f);
+                rotationRef = quaternion.Euler(0f, math.radians(state.BodyYawDegrees), 0f);
             }
 
             public bool OnChunkBegin(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask) {

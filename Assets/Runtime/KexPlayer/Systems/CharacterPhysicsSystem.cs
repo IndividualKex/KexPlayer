@@ -103,11 +103,15 @@ namespace KexPlayer {
                     ref CharacterState stateRef = ref State.ValueRW;
                     ref Input inputRef = ref Input.ValueRW;
 
-                    quaternion characterRotation = Kinematic.LocalTransform.ValueRO.Rotation;
-                    float3 characterForward = MathUtilities.GetForwardFromRotation(characterRotation);
-                    float3 characterRight = MathUtilities.GetRightFromRotation(characterRotation);
-                    float3 moveVector = (inputRef.Move.y * characterForward) + (inputRef.Move.x * characterRight);
+                    quaternion cameraYawRotation = quaternion.Euler(0f, math.radians(inputRef.ViewYawDegrees), 0f);
+                    float3 cameraForward = MathUtilities.GetForwardFromRotation(cameraYawRotation);
+                    float3 cameraRight = MathUtilities.GetRightFromRotation(cameraYawRotation);
+                    float3 moveVector = (inputRef.Move.y * cameraForward) + (inputRef.Move.x * cameraRight);
                     moveVector = MathUtilities.ClampToMaxLength(moveVector, 1f);
+
+                    if (math.lengthsq(inputRef.Move) > 0f) {
+                        stateRef.BodyYawDegrees = inputRef.ViewYawDegrees;
+                    }
 
                     if (bodyRef.ParentEntity != Entity.Null) {
                         moveVector = math.rotate(bodyRef.RotationFromParent, moveVector);

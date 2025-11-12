@@ -44,8 +44,10 @@ namespace KexPlayer {
                     CoyoteTimeDuration = authoring.CoyoteTimeDuration,
                     PreventAirAccelerationAgainstUngroundedHits = authoring.PreventAirAccelerationAgainstUngroundedHits,
                 });
+                float initialYaw = authoring.transform.eulerAngles.y;
                 AddComponent(entity, new CharacterState {
                     LastGroundedTime = 0,
+                    BodyYawDegrees = initialYaw,
                 });
                 AddComponent<Player>(entity);
                 AddComponent<Input>(entity);

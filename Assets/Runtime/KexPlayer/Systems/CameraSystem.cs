@@ -36,7 +36,7 @@ namespace KexPlayer {
                     cameraPosition = CalculatePosition(entityPosition, entityRotation, cameraRef.EyeOffset);
                 }
 
-                quaternion cameraRotation = CalculateRotation(entityRotation, cameraRef.PitchDegrees);
+                quaternion cameraRotation = CalculateRotation(cameraRef.YawDegrees, cameraRef.PitchDegrees);
 
                 if (SystemAPI.HasComponent<CameraShake>(entity)) {
                     var shake = SystemAPI.GetComponent<CameraShake>(entity);
@@ -55,9 +55,10 @@ namespace KexPlayer {
             return entityPosition + rotatedOffset;
         }
 
-        private static quaternion CalculateRotation(quaternion entityRotation, float pitchDegrees) {
+        private static quaternion CalculateRotation(float yawDegrees, float pitchDegrees) {
+            quaternion yawRotation = quaternion.Euler(0f, math.radians(yawDegrees), 0f);
             quaternion pitchRotation = quaternion.AxisAngle(math.right(), math.radians(pitchDegrees));
-            return math.mul(entityRotation, pitchRotation);
+            return math.mul(yawRotation, pitchRotation);
         }
     }
 }

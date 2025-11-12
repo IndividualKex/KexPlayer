@@ -34,6 +34,7 @@ KexPlayer/
 │   │   │   │   ├── Player.cs  # Player tag
 │   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
+│   │   │   │   ├── Head.cs  # Head entity link
 │   │   │   │   ├── Camera.cs  # Camera data
 │   │   │   │   ├── CameraShake.cs  # Camera shake
 │   │   │   │   ├── CameraOverride.cs  # Camera override
@@ -45,10 +46,12 @@ KexPlayer/
 │   │   │   │   ├── CameraShakeSystem.cs  # Camera shake
 │   │   │   │   ├── CameraApplySystem.cs  # Apply to Unity Camera
 │   │   │   │   ├── CharacterPhysicsSystem.cs  # Physics update
-│   │   │   │   └── CharacterVariableUpdateSystem.cs  # Rotation update
+│   │   │   │   ├── CharacterVariableUpdateSystem.cs  # Rotation update
+│   │   │   │   └── HeadUpdateSystem.cs  # Head rotation tracking
 │   │   │   └── Authoring/  # Player authoring
 │   │   │       ├── PlayerAuthoring.cs  # Main player setup
 │   │   │       ├── PlayerConfigAuthoring.cs  # Singleton with player prefab
+│   │   │       ├── HeadAuthoring.cs  # Head entity setup
 │   │   │       ├── CameraBootstrap.cs  # Scene initialization
 │   │   │       └── CameraOverrideAuthoring.cs  # Camera overrides
 │   │   ├── KexInteract/  # Interaction module (installable package)

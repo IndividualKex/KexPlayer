@@ -6,7 +6,7 @@ using KexPlayer;
 
 namespace KexInteract {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(PredictedFixedStepSimulationSystemGroup))]
+    [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
     [BurstCompile]
     public partial struct InteractSystem : ISystem {
         [BurstCompile]
