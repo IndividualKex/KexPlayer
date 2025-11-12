@@ -19,6 +19,7 @@ KexPlayer/
 ├── KexPlayer.asmdef  # Assembly definition
 ├── Components/
 │   ├── Player.cs  # Player tag component
+│   ├── PlayerConfig.cs  # Singleton with player prefab reference (for spawning)
 │   ├── Input.cs  # IInputComponentData (netcode-replicated input)
 │   ├── Camera.cs  # Camera data (pitch, sensitivity, eye offset, position, rotation)
 │   ├── CameraShake.cs  # Shake effect state
@@ -34,6 +35,7 @@ KexPlayer/
 │   └── CharacterVariableUpdateSystem.cs  # Rotation update (PredictedSimulationSystemGroup)
 └── Authoring/
     ├── PlayerAuthoring.cs  # Main player authoring with configuration
+    ├── PlayerConfigAuthoring.cs  # Singleton with player prefab reference
     ├── CameraBootstrap.cs  # Scene initialization (cursor lock)
     └── CameraOverrideAuthoring.cs  # Scene-placed camera overrides
 ```
@@ -62,6 +64,7 @@ KexPlayer/
 ## Components
 
 - **Player**: Tag component for player entities
+- **PlayerConfig**: Singleton holding player prefab Entity reference for spawning (used by game-specific spawn systems)
 - **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollDelta as int normalized to -1/0/1)
 - **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, EyeOffset, Position, Rotation)
 - **CameraShake**: Optional shake effect (Offset, Duration, RemainingTime, Magnitude, RandomSeed)

@@ -32,6 +32,7 @@ KexPlayer/
 │   │   │   ├── KexPlayer.asmdef  # Assembly definition
 │   │   │   ├── Components/  # All player components
 │   │   │   │   ├── Player.cs  # Player tag
+│   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
 │   │   │   │   ├── Camera.cs  # Camera data
 │   │   │   │   ├── CameraShake.cs  # Camera shake
@@ -47,6 +48,7 @@ KexPlayer/
 │   │   │   │   └── CharacterVariableUpdateSystem.cs  # Rotation update
 │   │   │   └── Authoring/  # Player authoring
 │   │   │       ├── PlayerAuthoring.cs  # Main player setup
+│   │   │       ├── PlayerConfigAuthoring.cs  # Singleton with player prefab
 │   │   │       ├── CameraBootstrap.cs  # Scene initialization
 │   │   │       └── CameraOverrideAuthoring.cs  # Camera overrides
 │   │   ├── KexInteract/  # Interaction module (installable package)
@@ -63,11 +65,10 @@ KexPlayer/
 │   │       ├── Systems/  # Outline rendering systems
 │   │       └── Authoring/  # Outline authoring
 │   ├── Scripts/  # Project-specific code
-│   │   └── Netcode/  # Multiplayer infrastructure (project-level)
+│   │   └── Netcode/  # Multiplayer infrastructure (reference implementation)
 │   │       ├── context.md
 │   │       ├── Bootstrap/  # Client-server world creation
-│   │       ├── Components/  # Netcode-specific components
-│   │       ├── Authoring/  # Netcode authoring
+│   │       ├── Components/  # ClientConnectionRequest RPC
 │   │       └── Systems/  # Connection and spawn systems
 │   ├── Prefabs/  # Unity prefabs
 │   ├── Scenes/  # Unity scenes

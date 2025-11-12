@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 using Unity.Collections;
+using KexPlayer;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -17,7 +18,6 @@ public partial struct ServerInitSystem : ISystem {
 
     public void OnUpdate(ref SystemState state) {
         var config = SystemAPI.GetSingleton<PlayerConfig>();
-        var worldName = state.WorldUnmanaged.Name;
 
         using var ecb = new EntityCommandBuffer(Allocator.Temp);
         foreach (var (request, entity) in SystemAPI
