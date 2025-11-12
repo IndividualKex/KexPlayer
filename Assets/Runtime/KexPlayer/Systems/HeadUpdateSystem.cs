@@ -11,17 +11,14 @@ namespace KexPlayer {
     public partial struct HeadUpdateSystem : ISystem {
         [BurstCompile]
         public void OnUpdate(ref SystemState state) {
-            foreach (var (head, transform) in SystemAPI
-                .Query<Head, RefRW<LocalTransform>>()
+            foreach (var (input, headRotation, playerTransform) in SystemAPI
+                .Query<Input, RefRW<HeadRotation>, LocalTransform>()
+                .WithAll<Player>()
             ) {
-                if (!SystemAPI.HasComponent<LocalToWorld>(head.Player) ||
-                    !SystemAPI.HasComponent<Input>(head.Player)) continue;
-                var playerTransform = SystemAPI.GetComponent<LocalTransform>(head.Player);
-                var input = SystemAPI.GetComponent<Input>(head.Player);
                 quaternion targetWorldRotation = CalculateRotation(input.ViewYawDegrees, input.ViewPitchDegrees);
                 quaternion currentWorldRotation = playerTransform.Rotation;
                 quaternion targetLocalRotation = math.mul(math.inverse(currentWorldRotation), targetWorldRotation);
-                transform.ValueRW.Rotation = targetLocalRotation;
+                headRotation.ValueRW.LocalRotation = targetLocalRotation;
             }
         }
 

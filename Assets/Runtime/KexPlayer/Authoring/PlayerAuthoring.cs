@@ -59,6 +59,9 @@ namespace KexPlayer {
                     LookSensitivity = authoring.LookInputSensitivity,
                     EyeOffset = authoring.EyeOffset,
                 });
+                AddComponent(entity, new HeadRotation {
+                    LocalRotation = quaternion.identity,
+                });
             }
         }
     }

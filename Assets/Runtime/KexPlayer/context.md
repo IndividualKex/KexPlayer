@@ -23,6 +23,7 @@ KexPlayer/
 │   ├── PlayerConfig.cs  # Singleton with player prefab reference (for spawning)
 │   ├── Input.cs  # IInputComponentData (netcode-replicated input)
 │   ├── Head.cs  # Links head entity to player entity
+│   ├── HeadRotation.cs  # Replicated head rotation on player entity
 │   ├── Camera.cs  # Camera data (pitch, sensitivity, eye offset, position, rotation)
 │   ├── CameraShake.cs  # Shake effect state
 │   ├── CameraOverride.cs  # Override position/rotation with restoration
@@ -35,7 +36,8 @@ KexPlayer/
 │   ├── CameraApplySystem.cs  # Apply to Unity Camera.main
 │   ├── CharacterPhysicsSystem.cs  # Movement physics (PredictedFixedStepSimulationSystemGroup)
 │   ├── CharacterVariableUpdateSystem.cs  # Rotation update (PredictedSimulationSystemGroup)
-│   └── HeadUpdateSystem.cs  # Head rotation tracking (PredictedSimulationSystemGroup)
+│   ├── HeadUpdateSystem.cs  # Calculates head rotation on player entity (PredictedSimulationSystemGroup)
+│   └── HeadApplySystem.cs  # Applies head rotation to child entity (TransformSystemGroup)
 └── Authoring/
     ├── PlayerAuthoring.cs  # Main player authoring with configuration
     ├── PlayerConfigAuthoring.cs  # Singleton with player prefab reference
@@ -46,17 +48,18 @@ KexPlayer/
 
 ## Scope
 
-- **In-scope**: Complete first-person player controller, input capture, view control, camera positioning, character physics, jumping, multiplayer input replication, camera effects, head rotation tracking
+- **In-scope**: Complete first-person player controller, input capture, view control, camera positioning, character physics, jumping, multiplayer input replication, camera effects, networked head rotation
 - **Out-of-scope**: Third-person cameras, game-specific interactions, rebinding UI, input buffering, inventory systems
 
 ## Entrypoints
 
-- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState)
+- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation)
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
 - **InputSystem**: Runs in GhostInputSystemGroup, captures keyboard/mouse input for entities with GhostOwnerIsLocal, updates Camera component with view angles
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
 - **CharacterVariableUpdateSystem**: Applies body rotation using CharacterState.BodyYawDegrees
-- **HeadUpdateSystem**: Updates head entity rotation to match player view angles
+- **HeadUpdateSystem**: Calculates head rotation from input, writes to player's HeadRotation component (predicted ghosts only)
+- **HeadApplySystem**: Applies HeadRotation from player to child head entity's LocalTransform (all players)
 - **CameraSystem**: Updates Camera component position/rotation each frame
 - **CameraApplySystem**: Applies Camera position/rotation to Unity Camera.main
 
@@ -64,8 +67,9 @@ KexPlayer/
 
 1. **Input** (GhostInputSystemGroup): InputSystem captures keyboard/mouse → writes Input.ViewYawDegrees/ViewPitchDegrees → updates Camera.YawDegrees/PitchDegrees
 2. **Physics** (PredictedFixedStepSimulationSystemGroup): CharacterPhysicsSystem reads Input → calculates movement relative to camera yaw → updates CharacterState.BodyYawDegrees when moving
-3. **Variable Update** (PredictedSimulationSystemGroup): CharacterVariableUpdateSystem reads CharacterState.BodyYawDegrees → applies body rotation, then HeadUpdateSystem updates head rotation to match view
-4. **Presentation** (PresentationSystemGroup): CameraShakeSystem → CameraSystem (independent camera rotation) → CameraApplySystem
+3. **Variable Update** (PredictedSimulationSystemGroup): CharacterVariableUpdateSystem applies body rotation → HeadUpdateSystem calculates head rotation → writes to HeadRotation component
+4. **Transform Update** (SimulationSystemGroup): HeadApplySystem reads HeadRotation → applies to head child entity LocalTransform
+5. **Presentation** (PresentationSystemGroup): CameraShakeSystem → CameraSystem (independent camera rotation) → CameraApplySystem
 
 ## Components
 
@@ -73,6 +77,7 @@ KexPlayer/
 - **PlayerConfig**: Singleton holding player prefab Entity reference for spawning (used by game-specific spawn systems)
 - **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollDelta as int normalized to -1/0/1)
 - **Head**: Links head entity to player entity
+- **HeadRotation**: Replicated head rotation stored on player entity (LocalRotation as quaternion with [GhostField])
 - **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, EyeOffset, Position, Rotation)
 - **CameraShake**: Optional shake effect (Offset, Duration, RemainingTime, Magnitude, RandomSeed)
 - **CameraOverride**: Optional override (Position, Rotation, OriginalRotation, IsActive)
