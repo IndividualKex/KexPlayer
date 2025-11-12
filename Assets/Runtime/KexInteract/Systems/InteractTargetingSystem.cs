@@ -12,7 +12,6 @@ namespace KexInteract {
     [UpdateAfter(typeof(CharacterPhysicsSystem))]
     [BurstCompile]
     public partial struct InteractTargetingSystem : ISystem {
-        private const float MaxDistance = 3f;
         private const float DistanceFactor = 2f;
         private const float AngleFactor = 0.5f;
 
@@ -30,7 +29,7 @@ namespace KexInteract {
             ) {
                 var ray = new RaycastInput {
                     Start = camera.Position,
-                    End = camera.Position + math.forward(camera.Rotation) * MaxDistance,
+                    End = camera.Position + math.forward(camera.Rotation) * interacter.ValueRO.InteractDistance,
                     Filter = new CollisionFilter {
                         BelongsTo = ~0u,
                         CollidesWith = (uint)interacter.ValueRO.PhysicsMask.value,
@@ -38,6 +37,7 @@ namespace KexInteract {
                 };
 
                 Entity interactableEntity = Entity.Null;
+                float3 hitPosition = float3.zero;
                 hits.Clear();
                 if (collisionWorld.CastRay(ray, ref hits)) {
                     float bestScore = 0f;
@@ -58,11 +58,13 @@ namespace KexInteract {
                         if (score > bestScore) {
                             bestScore = score;
                             interactableEntity = hit.Entity;
+                            hitPosition = hit.Position;
                         }
                     }
                 }
 
                 interacter.ValueRW.Target = interactableEntity;
+                interacter.ValueRW.HitPosition = hitPosition;
             }
 
             hits.Dispose();

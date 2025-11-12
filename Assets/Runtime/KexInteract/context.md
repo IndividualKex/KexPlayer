@@ -24,8 +24,8 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 ### Components
 
 - **Interactable**: InteractionMask (filtering) + ControlMask (allowed controls)
-- **Interacter**: Target, PhysicsMask, InteractionMask
-- **InteractEvent**: Target, Sender, Interaction (byte index)
+- **Interacter**: Target, HitPosition, InteractDistance, PhysicsMask, InteractionMask
+- **InteractEvent**: Target, Sender, Interaction (byte index), HitPosition
 - **InteractionBlocker**: Tag to disable interactions
 
 ### Systems
@@ -36,9 +36,9 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 
 ## Integration
 
-1. Add Interacter to player (set PhysicsMask, optional InteractionMask)
+1. Add Interacter to player (set InteractDistance, PhysicsMask, optional InteractionMask)
 2. Add Interactable to interactive entities (set InteractionMask, ControlMask)
-3. Create systems that query InteractEvent and implement responses
+3. Create systems that query InteractEvent and implement responses (access HitPosition for world-space interaction point)
 
 ## Dependencies
 
