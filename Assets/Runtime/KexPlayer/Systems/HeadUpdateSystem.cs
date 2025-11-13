@@ -13,7 +13,7 @@ namespace KexPlayer {
         public void OnUpdate(ref SystemState state) {
             foreach (var (input, headRotation, playerTransform) in SystemAPI
                 .Query<Input, RefRW<HeadRotation>, LocalTransform>()
-                .WithAll<Player>()
+                .WithAll<Player, GhostOwnerIsLocal>()
             ) {
                 quaternion targetWorldRotation = CalculateRotation(input.ViewYawDegrees, input.ViewPitchDegrees);
                 quaternion currentWorldRotation = playerTransform.Rotation;
