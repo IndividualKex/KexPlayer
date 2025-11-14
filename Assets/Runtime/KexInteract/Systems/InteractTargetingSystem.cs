@@ -3,7 +3,6 @@ using Unity.Entities;
 using Unity.Physics;
 using Unity.Mathematics;
 using Unity.Collections;
-using Unity.Transforms;
 using Unity.NetCode;
 using KexPlayer;
 
@@ -52,8 +51,7 @@ namespace KexInteract {
                         if (candidate.InteractionMask != 0 && interacter.ValueRO.InteractionMask != 0 &&
                             (candidate.InteractionMask & interacter.ValueRO.InteractionMask) == 0) continue;
 
-                        var transform = SystemAPI.GetComponent<LocalToWorld>(hit.Entity);
-                        float score = CalculateInteractionScore(transform.Position, camera.Position, rayDirection);
+                        float score = CalculateInteractionScore(hit.Position, camera.Position, rayDirection);
 
                         if (score > bestScore) {
                             bestScore = score;
