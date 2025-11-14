@@ -1,10 +1,11 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
+using Unity.NetCode;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(HeadUpdateSystem))]
+    [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
     [UpdateBefore(typeof(TransformSystemGroup))]
     [BurstCompile]
     public partial struct HeadApplySystem : ISystem {
