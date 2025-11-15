@@ -6,17 +6,18 @@ using Unity.Mathematics;
 using KexPlayer;
 
 namespace KexInteract {
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [BurstCompile]
     public partial struct InteractSystem : ISystem {
         [BurstCompile]
         public void OnUpdate(ref SystemState state) {
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
+            using var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (interacter, input, entity) in SystemAPI
                 .Query<Interacter, Input>()
-                .WithAll<GhostOwnerIsLocal>()
+                .WithAll<GhostOwnerIsLocal, Simulate>()
                 .WithEntityAccess()
             ) {
                 if (interacter.Target == Entity.Null) continue;
@@ -42,9 +43,7 @@ namespace KexInteract {
                     CreateInteractEvent(ecb, interacter.Target, entity, 5, interacter.HitPosition);
                 }
             }
-
             ecb.Playback(state.EntityManager);
-            ecb.Dispose();
         }
 
         private Entity CreateInteractEvent(EntityCommandBuffer ecb, Entity target, Entity sender, byte interaction, float3 hitPosition) {

@@ -1,7 +1,7 @@
 {
     "name": "com.individualkex.kexinteract",
     "displayName": "KexInteract",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Generic raycast-based interaction system for Unity DOTS ECS projects",
     "unity": "6000.0",
     "keywords": [

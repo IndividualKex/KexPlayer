@@ -1,8 +1,9 @@
 using KexInteract;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [UpdateAfter(typeof(InteractSystem))]
 public partial class DebugInteractionSystem : SystemBase {
     protected override void OnUpdate() {

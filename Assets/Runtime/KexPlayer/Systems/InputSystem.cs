@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(GhostInputSystemGroup))]
+    [AlwaysSynchronizeSystem]
     public partial class InputSystem : SystemBase {
         protected override void OnUpdate() {
             foreach (var (input, camera) in SystemAPI
