@@ -9,6 +9,10 @@ namespace KexInteract {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [BurstCompile]
     public partial struct InteractSystem : ISystem {
+        public void OnCreate(ref SystemState state) {
+            state.RequireForUpdate<NetworkTime>();
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state) {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
