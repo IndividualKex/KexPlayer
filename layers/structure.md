@@ -34,6 +34,7 @@ KexPlayer/
 │   │   │   │   ├── Player.cs  # Player tag
 │   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
+│   │   │   │   ├── CursorLock.cs  # Cursor lock state
 │   │   │   │   ├── Head.cs  # Head entity link
 │   │   │   │   ├── Camera.cs  # Camera data
 │   │   │   │   ├── CameraShake.cs  # Camera shake
@@ -41,6 +42,7 @@ KexPlayer/
 │   │   │   │   ├── CharacterConfig.cs  # Character configuration
 │   │   │   │   └── CharacterState.cs  # Character state
 │   │   │   ├── Systems/  # All player systems
+│   │   │   │   ├── CursorLockSystem.cs  # Cursor state application
 │   │   │   │   ├── InputSystem.cs  # Input capture
 │   │   │   │   ├── CameraSystem.cs  # Camera positioning
 │   │   │   │   ├── CameraShakeSystem.cs  # Camera shake
@@ -52,7 +54,6 @@ KexPlayer/
 │   │   │       ├── PlayerAuthoring.cs  # Main player setup
 │   │   │       ├── PlayerConfigAuthoring.cs  # Singleton with player prefab
 │   │   │       ├── HeadAuthoring.cs  # Head entity setup
-│   │   │       ├── CameraBootstrap.cs  # Scene initialization
 │   │   │       └── CameraOverrideAuthoring.cs  # Camera overrides
 │   │   ├── KexInteract/  # Interaction module (installable package)
 │   │   │   ├── context.md
@@ -94,9 +95,9 @@ KexPlayer/
 
 ## Entry points
 
-- Bootstrap: Assets/Runtime/KexPlayer/Authoring/CameraBootstrap.cs (scene initialization)
 - Player Authoring: Assets/Runtime/KexPlayer/Authoring/PlayerAuthoring.cs (player entity setup)
-- Input System: Assets/Runtime/KexPlayer/Systems/InputSystem.cs (input + view processing entry)
+- Cursor Lock System: Assets/Runtime/KexPlayer/Systems/CursorLockSystem.cs (cursor state + input)
+- Input System: Assets/Runtime/KexPlayer/Systems/InputSystem.cs (input + view processing)
 - Character Physics: Assets/Runtime/KexPlayer/Systems/CharacterPhysicsSystem.cs (physics update)
 
 ## Naming Conventions

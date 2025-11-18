@@ -8,10 +8,17 @@ namespace KexPlayer {
     [AlwaysSynchronizeSystem]
     public partial class InputSystem : SystemBase {
         protected override void OnUpdate() {
-            foreach (var (input, camera) in SystemAPI
-                .Query<RefRW<Input>, RefRW<Camera>>()
+            foreach (var (input, camera, cursorLock) in SystemAPI
+                .Query<RefRW<Input>, RefRW<Camera>, CursorLock>()
                 .WithAll<GhostOwnerIsLocal>()
             ) {
+                if (!cursorLock.Value) {
+                    input.ValueRW = default;
+                    input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
+                    input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;
+                    continue;
+                }
+
                 input.ValueRW.Jump = default;
                 if (Keyboard.current.spaceKey.wasPressedThisFrame) input.ValueRW.Jump.Set();
 

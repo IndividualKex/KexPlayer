@@ -62,6 +62,9 @@ namespace KexPlayer {
                 AddComponent(entity, new HeadRotation {
                     LocalRotation = quaternion.identity,
                 });
+                AddComponent(entity, new CursorLock {
+                    Value = true,
+                });
             }
         }
     }

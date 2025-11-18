@@ -22,6 +22,7 @@ KexPlayer/
 │   ├── Player.cs  # Player tag component
 │   ├── PlayerConfig.cs  # Singleton with player prefab reference (for spawning)
 │   ├── Input.cs  # IInputComponentData (netcode-replicated input)
+│   ├── CursorLock.cs  # Client-side cursor lock state (bool)
 │   ├── Head.cs  # Links head entity to player entity
 │   ├── HeadRotation.cs  # Replicated head rotation on player entity
 │   ├── Camera.cs  # Camera data (pitch, sensitivity, eye offset, position, rotation)
@@ -30,7 +31,8 @@ KexPlayer/
 │   ├── CharacterConfig.cs  # Immutable movement configuration
 │   └── CharacterState.cs  # Runtime character state
 ├── Systems/
-│   ├── InputSystem.cs  # GhostInputSystemGroup, captures keyboard/mouse input
+│   ├── CursorLockSystem.cs  # Applies CursorLock state to Unity cursor (GhostInputSystemGroup)
+│   ├── InputSystem.cs  # GhostInputSystemGroup, captures keyboard/mouse input when cursor locked
 │   ├── CameraSystem.cs  # Camera positioning logic
 │   ├── CameraShakeSystem.cs  # Shake offset calculation
 │   ├── CameraApplySystem.cs  # Apply to Unity Camera.main
@@ -42,7 +44,6 @@ KexPlayer/
     ├── PlayerAuthoring.cs  # Main player authoring with configuration
     ├── PlayerConfigAuthoring.cs  # Singleton with player prefab reference
     ├── HeadAuthoring.cs  # Links head to player
-    ├── CameraBootstrap.cs  # Scene initialization (cursor lock)
     └── CameraOverrideAuthoring.cs  # Scene-placed camera overrides
 ```
 
@@ -53,9 +54,10 @@ KexPlayer/
 
 ## Entrypoints
 
-- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation)
+- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock)
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
-- **InputSystem**: Runs in GhostInputSystemGroup, captures keyboard/mouse input for entities with GhostOwnerIsLocal, updates Camera component with view angles
+- **CursorLockSystem**: Handles Escape/click input, applies CursorLock state to Unity cursor
+- **InputSystem**: Captures keyboard/mouse input when cursor locked, preserves view angles when unlocked
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
 - **CharacterVariableUpdateSystem**: Applies body rotation using CharacterState.BodyYawDegrees
 - **HeadUpdateSystem**: Calculates head rotation from input, writes to player's HeadRotation component (predicted ghosts only)
@@ -65,7 +67,7 @@ KexPlayer/
 
 ## System Flow
 
-1. **Input** (GhostInputSystemGroup): InputSystem captures keyboard/mouse → writes Input.ViewYawDegrees/ViewPitchDegrees → updates Camera.YawDegrees/PitchDegrees
+1. **Input** (GhostInputSystemGroup): CursorLockSystem applies cursor state → InputSystem captures keyboard/mouse when cursor locked → writes Input.ViewYawDegrees/ViewPitchDegrees → updates Camera.YawDegrees/PitchDegrees
 2. **Physics** (PredictedFixedStepSimulationSystemGroup): CharacterPhysicsSystem reads Input → calculates movement relative to camera yaw → updates CharacterState.BodyYawDegrees when moving
 3. **Variable Update** (PredictedSimulationSystemGroup): CharacterVariableUpdateSystem applies body rotation → HeadUpdateSystem calculates head rotation → writes to HeadRotation component
 4. **Transform Update** (SimulationSystemGroup): HeadApplySystem reads HeadRotation → applies to head child entity LocalTransform
@@ -75,7 +77,8 @@ KexPlayer/
 
 - **Player**: Tag component for player entities
 - **PlayerConfig**: Singleton holding player prefab Entity reference for spawning (used by game-specific spawn systems)
-- **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollDelta as int normalized to -1/0/1)
+- **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollDelta as int normalized to -1/0/1). Set to default when cursor unlocked
+- **CursorLock**: Client-side cursor lock state (bool with implicit operators). When false, input passthrough disabled
 - **Head**: Links head entity to player entity
 - **HeadRotation**: Replicated head rotation stored on player entity (LocalRotation as quaternion with [GhostField])
 - **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, EyeOffset, Position, Rotation)
