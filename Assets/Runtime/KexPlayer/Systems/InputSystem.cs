@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace KexPlayer {
@@ -9,10 +10,30 @@ namespace KexPlayer {
     public partial class InputSystem : SystemBase {
         protected override void OnUpdate() {
             foreach (var (input, camera, cursorLock) in SystemAPI
-                .Query<RefRW<Input>, RefRW<Camera>, CursorLock>()
+                .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>>()
                 .WithAll<GhostOwnerIsLocal>()
             ) {
-                if (!cursorLock.Value) {
+                bool wasLocked = cursorLock.ValueRO.Value;
+
+                if (Keyboard.current.escapeKey.wasPressedThisFrame) {
+                    cursorLock.ValueRW.Value = false;
+                }
+
+                if (!cursorLock.ValueRO.Value && Mouse.current.leftButton.wasPressedThisFrame) {
+                    cursorLock.ValueRW.Value = true;
+                }
+
+                if (cursorLock.ValueRO.Value) {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                } else {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
+
+                bool justLocked = !wasLocked && cursorLock.ValueRO.Value;
+
+                if (!cursorLock.ValueRO.Value) {
                     input.ValueRW = default;
                     input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                     input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;
@@ -29,7 +50,7 @@ namespace KexPlayer {
                 if (Keyboard.current.leftShiftKey.wasPressedThisFrame) input.ValueRW.Sprint.Set();
 
                 input.ValueRW.Fire = default;
-                if (Mouse.current.leftButton.wasPressedThisFrame) input.ValueRW.Fire.Set();
+                if (!justLocked && Mouse.current.leftButton.wasPressedThisFrame) input.ValueRW.Fire.Set();
 
                 input.ValueRW.AltFire = default;
                 if (Mouse.current.rightButton.wasPressedThisFrame) input.ValueRW.AltFire.Set();

@@ -42,8 +42,7 @@ KexPlayer/
 │   │   │   │   ├── CharacterConfig.cs  # Character configuration
 │   │   │   │   └── CharacterState.cs  # Character state
 │   │   │   ├── Systems/  # All player systems
-│   │   │   │   ├── CursorLockSystem.cs  # Cursor state application
-│   │   │   │   ├── InputSystem.cs  # Input capture
+│   │   │   │   ├── InputSystem.cs  # Input capture and cursor lock
 │   │   │   │   ├── CameraSystem.cs  # Camera positioning
 │   │   │   │   ├── CameraShakeSystem.cs  # Camera shake
 │   │   │   │   ├── CameraApplySystem.cs  # Apply to Unity Camera
@@ -96,8 +95,7 @@ KexPlayer/
 ## Entry points
 
 - Player Authoring: Assets/Runtime/KexPlayer/Authoring/PlayerAuthoring.cs (player entity setup)
-- Cursor Lock System: Assets/Runtime/KexPlayer/Systems/CursorLockSystem.cs (cursor state + input)
-- Input System: Assets/Runtime/KexPlayer/Systems/InputSystem.cs (input + view processing)
+- Input System: Assets/Runtime/KexPlayer/Systems/InputSystem.cs (input capture, cursor lock, view processing)
 - Character Physics: Assets/Runtime/KexPlayer/Systems/CharacterPhysicsSystem.cs (physics update)
 
 ## Naming Conventions
