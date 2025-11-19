@@ -2,12 +2,31 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(GhostInputSystemGroup))]
     [AlwaysSynchronizeSystem]
     public partial class InputSystem : SystemBase {
+        private bool _focusLost;
+
+        protected override void OnCreate() {
+            Application.focusChanged += OnFocusChanged;
+        }
+
+        protected override void OnDestroy() {
+            Application.focusChanged -= OnFocusChanged;
+        }
+
+        private void OnFocusChanged(bool hasFocus) {
+            if (!hasFocus) {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                _focusLost = true;
+            }
+        }
+
         protected override void OnUpdate() {
             foreach (var (input, camera, cursorLock) in SystemAPI
                 .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>>()
@@ -15,18 +34,27 @@ namespace KexPlayer {
             ) {
                 bool wasLocked = cursorLock.ValueRO.Value;
 
+                if (_focusLost) {
+                    cursorLock.ValueRW.Value = false;
+                    _focusLost = false;
+                }
+
                 if (Keyboard.current.escapeKey.wasPressedThisFrame) {
                     cursorLock.ValueRW.Value = false;
                 }
 
                 if (!cursorLock.ValueRO.Value && Mouse.current.leftButton.wasPressedThisFrame) {
-                    cursorLock.ValueRW.Value = true;
+                    bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+                    if (!overUI) {
+                        cursorLock.ValueRW.Value = true;
+                    }
                 }
 
                 if (cursorLock.ValueRO.Value) {
                     Cursor.lockState = CursorLockMode.Locked;
                     Cursor.visible = false;
-                } else {
+                }
+                else {
                     Cursor.lockState = CursorLockMode.None;
                     Cursor.visible = true;
                 }
