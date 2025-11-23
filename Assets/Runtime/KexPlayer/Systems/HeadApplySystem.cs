@@ -16,7 +16,7 @@ namespace KexPlayer {
             ) {
                 if (!SystemAPI.HasComponent<HeadRotation>(head.Player)) continue;
                 var headRotation = SystemAPI.GetComponent<HeadRotation>(head.Player);
-                transform.ValueRW.Rotation = headRotation.LocalRotation;
+                transform.ValueRW = LocalTransform.FromRotation(headRotation.LocalRotation);
             }
         }
     }
