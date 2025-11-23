@@ -11,6 +11,7 @@ namespace KexPlayer {
                 var playerEntity = GetEntity(authoring.Player.gameObject, TransformUsageFlags.Dynamic);
                 AddComponent(entity, new Head {
                     Player = playerEntity,
+                    Offset = authoring.transform.localPosition,
                 });
             }
         }

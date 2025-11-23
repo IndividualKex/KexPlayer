@@ -1,7 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Transforms;
 using Unity.NetCode;
+using Unity.Transforms;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -16,7 +16,10 @@ namespace KexPlayer {
             ) {
                 if (!SystemAPI.HasComponent<HeadRotation>(head.Player)) continue;
                 var headRotation = SystemAPI.GetComponent<HeadRotation>(head.Player);
-                transform.ValueRW = LocalTransform.FromRotation(headRotation.LocalRotation);
+                transform.ValueRW = LocalTransform.FromPositionRotation(
+                    head.Offset,
+                    headRotation.LocalRotation
+                );
             }
         }
     }

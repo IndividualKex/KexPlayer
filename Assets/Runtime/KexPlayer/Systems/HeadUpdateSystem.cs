@@ -22,7 +22,7 @@ namespace KexPlayer {
             }
         }
 
-        private quaternion CalculateRotation(float yawDegrees, float pitchDegrees) {
+        private static quaternion CalculateRotation(float yawDegrees, float pitchDegrees) {
             quaternion yawRotation = quaternion.Euler(0f, math.radians(yawDegrees), 0f);
             quaternion pitchRotation = quaternion.AxisAngle(math.right(), math.radians(pitchDegrees));
             return math.mul(yawRotation, pitchRotation);
