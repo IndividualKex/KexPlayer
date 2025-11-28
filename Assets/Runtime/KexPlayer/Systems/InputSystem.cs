@@ -98,6 +98,27 @@ namespace KexPlayer {
                 input.ValueRW.Menu = default;
                 if (Keyboard.current.escapeKey.wasPressedThisFrame) input.ValueRW.Menu.Set();
 
+                input.ValueRW.Digit1 = default;
+                input.ValueRW.Digit2 = default;
+                input.ValueRW.Digit3 = default;
+                input.ValueRW.Digit4 = default;
+                input.ValueRW.Digit5 = default;
+                input.ValueRW.Digit6 = default;
+                input.ValueRW.Digit7 = default;
+                input.ValueRW.Digit8 = default;
+                input.ValueRW.Digit9 = default;
+                input.ValueRW.Digit0 = default;
+                if (Keyboard.current.digit1Key.wasPressedThisFrame) input.ValueRW.Digit1.Set();
+                if (Keyboard.current.digit2Key.wasPressedThisFrame) input.ValueRW.Digit2.Set();
+                if (Keyboard.current.digit3Key.wasPressedThisFrame) input.ValueRW.Digit3.Set();
+                if (Keyboard.current.digit4Key.wasPressedThisFrame) input.ValueRW.Digit4.Set();
+                if (Keyboard.current.digit5Key.wasPressedThisFrame) input.ValueRW.Digit5.Set();
+                if (Keyboard.current.digit6Key.wasPressedThisFrame) input.ValueRW.Digit6.Set();
+                if (Keyboard.current.digit7Key.wasPressedThisFrame) input.ValueRW.Digit7.Set();
+                if (Keyboard.current.digit8Key.wasPressedThisFrame) input.ValueRW.Digit8.Set();
+                if (Keyboard.current.digit9Key.wasPressedThisFrame) input.ValueRW.Digit9.Set();
+                if (Keyboard.current.digit0Key.wasPressedThisFrame) input.ValueRW.Digit0.Set();
+
                 float x = 0f;
                 float y = 0f;
 

@@ -18,6 +18,17 @@ namespace KexPlayer {
 
         public InputEvent Menu;
 
+        public InputEvent Digit1;
+        public InputEvent Digit2;
+        public InputEvent Digit3;
+        public InputEvent Digit4;
+        public InputEvent Digit5;
+        public InputEvent Digit6;
+        public InputEvent Digit7;
+        public InputEvent Digit8;
+        public InputEvent Digit9;
+        public InputEvent Digit0;
+
         public float2 Move;
         public float ViewYawDegrees;
         public float ViewPitchDegrees;

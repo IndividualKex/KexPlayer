@@ -31,8 +31,7 @@ KexPlayer/
 │   ├── CharacterConfig.cs  # Immutable movement configuration
 │   └── CharacterState.cs  # Runtime character state
 ├── Systems/
-│   ├── CursorLockSystem.cs  # Applies CursorLock state to Unity cursor (GhostInputSystemGroup)
-│   ├── InputSystem.cs  # GhostInputSystemGroup, captures keyboard/mouse input when cursor locked
+│   ├── InputSystem.cs  # GhostInputSystemGroup, cursor lock handling and input capture
 │   ├── CameraSystem.cs  # Camera positioning logic
 │   ├── CameraShakeSystem.cs  # Shake offset calculation
 │   ├── CameraApplySystem.cs  # Apply to Unity Camera.main
@@ -56,8 +55,7 @@ KexPlayer/
 
 - **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock)
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
-- **CursorLockSystem**: Handles Escape/click input, applies CursorLock state to Unity cursor
-- **InputSystem**: Captures keyboard/mouse input when cursor locked, preserves view angles when unlocked
+- **InputSystem**: Handles cursor lock (Escape/click/focus loss), captures input when locked, preserves view angles when unlocked
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
 - **CharacterVariableUpdateSystem**: Applies body rotation using CharacterState.BodyYawDegrees
 - **HeadUpdateSystem**: Calculates head rotation from input, writes to player's HeadRotation component (predicted ghosts only)
@@ -67,7 +65,7 @@ KexPlayer/
 
 ## System Flow
 
-1. **Input** (GhostInputSystemGroup): CursorLockSystem applies cursor state → InputSystem captures keyboard/mouse when cursor locked → writes Input.ViewYawDegrees/ViewPitchDegrees → updates Camera.YawDegrees/PitchDegrees
+1. **Input** (GhostInputSystemGroup): InputSystem handles cursor lock and captures keyboard/mouse when locked → writes Input.ViewYawDegrees/ViewPitchDegrees → updates Camera.YawDegrees/PitchDegrees
 2. **Physics** (PredictedFixedStepSimulationSystemGroup): CharacterPhysicsSystem reads Input → calculates movement relative to camera yaw → updates CharacterState.BodyYawDegrees when moving
 3. **Variable Update** (PredictedSimulationSystemGroup): CharacterVariableUpdateSystem applies body rotation → HeadUpdateSystem calculates head rotation → writes to HeadRotation component
 4. **Transform Update** (SimulationSystemGroup): HeadApplySystem reads HeadRotation → applies to head child entity LocalTransform
