@@ -29,9 +29,11 @@ namespace KexPlayer {
         public InputEvent Digit9;
         public InputEvent Digit0;
 
+        public InputEvent ScrollUp;
+        public InputEvent ScrollDown;
+
         public float2 Move;
         public float ViewYawDegrees;
         public float ViewPitchDegrees;
-        public int ScrollDelta;
     }
 }

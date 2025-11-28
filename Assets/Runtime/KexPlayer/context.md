@@ -75,7 +75,7 @@ KexPlayer/
 
 - **Player**: Tag component for player entities
 - **PlayerConfig**: Singleton holding player prefab Entity reference for spawning (used by game-specific spawn systems)
-- **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollDelta as int normalized to -1/0/1). Set to default when cursor unlocked
+- **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollUp, ScrollDown as InputEvents). Set to default when cursor unlocked
 - **CursorLock**: Client-side cursor lock state (bool with implicit operators). When false, input passthrough disabled
 - **Head**: Links head entity to player entity
 - **HeadRotation**: Replicated head rotation stored on player entity (LocalRotation as quaternion with [GhostField])

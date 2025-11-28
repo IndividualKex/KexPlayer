@@ -139,8 +139,11 @@ namespace KexPlayer {
                 input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                 input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;
 
+                input.ValueRW.ScrollUp = default;
+                input.ValueRW.ScrollDown = default;
                 float scrollY = Mouse.current.scroll.ReadValue().y;
-                input.ValueRW.ScrollDelta = scrollY > 0 ? 1 : scrollY < 0 ? -1 : 0;
+                if (scrollY > 0) input.ValueRW.ScrollUp.Set();
+                else if (scrollY < 0) input.ValueRW.ScrollDown.Set();
             }
         }
     }
