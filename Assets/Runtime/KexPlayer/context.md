@@ -25,7 +25,7 @@ KexPlayer/
 │   ├── CursorLock.cs  # Client-side cursor lock state (bool)
 │   ├── Head.cs  # Links head entity to player entity
 │   ├── HeadRotation.cs  # Replicated head rotation on player entity
-│   ├── Camera.cs  # Camera data (pitch, sensitivity, eye offset, position, rotation)
+│   ├── Camera.cs  # Camera data (pitch, sensitivity, head entity, position, rotation)
 │   ├── CameraShake.cs  # Shake effect state
 │   ├── CameraOverride.cs  # Override position/rotation with restoration
 │   ├── CharacterConfig.cs  # Immutable movement configuration
@@ -53,14 +53,14 @@ KexPlayer/
 
 ## Entrypoints
 
-- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock)
+- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock). References HeadAuthoring to set Camera.HeadEntity
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
 - **InputSystem**: Handles cursor lock (Escape/click/focus loss), captures input when locked, preserves view angles when unlocked
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
 - **CharacterVariableUpdateSystem**: Applies body rotation using CharacterState.BodyYawDegrees
 - **HeadUpdateSystem**: Calculates head rotation from input, writes to player's HeadRotation component (predicted ghosts only)
 - **HeadApplySystem**: Applies HeadRotation from player to child head entity's LocalTransform (all players)
-- **CameraSystem**: Updates Camera component position/rotation each frame
+- **CameraSystem**: Updates Camera component position (from head entity) and rotation each frame
 - **CameraApplySystem**: Applies Camera position/rotation to Unity Camera.main
 
 ## System Flow
@@ -79,7 +79,7 @@ KexPlayer/
 - **CursorLock**: Client-side cursor lock state (bool with implicit operators). When false, input passthrough disabled
 - **Head**: Links head entity to player entity
 - **HeadRotation**: Replicated head rotation stored on player entity (LocalRotation as quaternion with [GhostField])
-- **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, EyeOffset, Position, Rotation)
+- **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, HeadEntity, Position, Rotation)
 - **CameraShake**: Optional shake effect (Offset, Duration, RemainingTime, Magnitude, RandomSeed)
 - **CameraOverride**: Optional override (Position, Rotation, OriginalRotation, IsActive)
 - **CharacterConfig**: Immutable movement config (speeds, gravity, jump height, coyote time, step/slope handling)

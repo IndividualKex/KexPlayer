@@ -21,7 +21,7 @@ namespace KexPlayer {
         public bool PreventAirAccelerationAgainstUngroundedHits = true;
 
         [Header("Camera")]
-        public float3 EyeOffset = new(0f, 1.6f, 0f);
+        public HeadAuthoring Head;
         public float MinPitch = -89f;
         public float MaxPitch = 89f;
         public float LookInputSensitivity = 0.1f;
@@ -51,13 +51,18 @@ namespace KexPlayer {
                 });
                 AddComponent<Player>(entity);
                 AddComponent<Input>(entity);
+
+                Entity headEntity = authoring.Head != null
+                    ? GetEntity(authoring.Head.gameObject, TransformUsageFlags.Dynamic)
+                    : Entity.Null;
+
                 AddComponent(entity, new Camera {
                     YawDegrees = 0f,
                     PitchDegrees = 0f,
                     MinPitch = authoring.MinPitch,
                     MaxPitch = authoring.MaxPitch,
                     LookSensitivity = authoring.LookInputSensitivity,
-                    EyeOffset = authoring.EyeOffset,
+                    HeadEntity = headEntity,
                 });
                 AddComponent(entity, new HeadRotation {
                     LocalRotation = quaternion.identity,

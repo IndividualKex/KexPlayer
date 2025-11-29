@@ -8,7 +8,7 @@ namespace KexPlayer {
         public float MinPitch;
         public float MaxPitch;
         public float LookSensitivity;
-        public float3 EyeOffset;
+        public Entity HeadEntity;
         public Entity OverrideEntity;
 
         public float3 Position;

@@ -10,16 +10,14 @@ namespace KexPlayer {
     public partial struct CameraSystem : ISystem {
         [BurstCompile]
         public void OnUpdate(ref SystemState state) {
-            foreach (var (camera, localToWorld, entity) in SystemAPI
-                .Query<RefRW<Camera>, LocalToWorld>()
+            foreach (var (camera, entity) in SystemAPI
+                .Query<RefRW<Camera>>()
                 .WithEntityAccess()
             ) {
                 ref var cameraRef = ref camera.ValueRW;
 
-                float3 entityPosition = localToWorld.Position;
-                quaternion entityRotation = localToWorld.Rotation;
-
                 float3 cameraPosition;
+                
 
                 if (cameraRef.OverrideEntity != Entity.Null &&
                     SystemAPI.HasComponent<CameraOverride>(cameraRef.OverrideEntity)
@@ -29,11 +27,11 @@ namespace KexPlayer {
                         cameraPosition = cameraOverride.Position;
                     }
                     else {
-                        cameraPosition = CalculatePosition(entityPosition, entityRotation, cameraRef.EyeOffset);
+                        cameraPosition = GetHeadPosition(ref state, cameraRef.HeadEntity);
                     }
                 }
                 else {
-                    cameraPosition = CalculatePosition(entityPosition, entityRotation, cameraRef.EyeOffset);
+                    cameraPosition = GetHeadPosition(ref state, cameraRef.HeadEntity);
                 }
 
                 quaternion cameraRotation = CalculateRotation(cameraRef.YawDegrees, cameraRef.PitchDegrees);
@@ -50,9 +48,10 @@ namespace KexPlayer {
             }
         }
 
-        private static float3 CalculatePosition(float3 entityPosition, quaternion entityRotation, float3 eyeOffset) {
-            float3 rotatedOffset = math.rotate(entityRotation, eyeOffset);
-            return entityPosition + rotatedOffset;
+        private float3 GetHeadPosition(ref SystemState state, Entity headEntity) {
+            if (headEntity == Entity.Null) return float3.zero;
+            if (!SystemAPI.HasComponent<LocalToWorld>(headEntity)) return float3.zero;
+            return SystemAPI.GetComponent<LocalToWorld>(headEntity).Position;
         }
 
         private static quaternion CalculateRotation(float yawDegrees, float pitchDegrees) {
