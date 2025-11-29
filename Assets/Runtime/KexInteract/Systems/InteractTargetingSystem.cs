@@ -48,8 +48,7 @@ namespace KexInteract {
                         if (!SystemAPI.HasComponent<Interactable>(hit.Entity)) continue;
 
                         var candidate = SystemAPI.GetComponent<Interactable>(hit.Entity);
-                        if (candidate.InteractionMask != 0 && interacter.ValueRO.InteractionMask != 0 &&
-                            (candidate.InteractionMask & interacter.ValueRO.InteractionMask) == 0) continue;
+                        if ((candidate.InteractionMask & interacter.ValueRO.InteractionMask) == 0) continue;
 
                         float score = CalculateInteractionScore(hit.Position, camera.Position, rayDirection);
 
