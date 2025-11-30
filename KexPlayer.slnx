@@ -55,7 +55,6 @@
   <Project Path="Unity.NetCode.Editor.Drawers.csproj" />
   <Project Path="Unity.CharacterController.csproj" />
   <Project Path="Unity.VisualScripting.SettingsProvider.Editor.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.NetCode.Physics.Hybrid.csproj" />
   <Project Path="Unity.Entities.UI.csproj" />
   <Project Path="Unity.Transforms.csproj" />
@@ -65,6 +64,7 @@
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
   <Project Path="Unity.Profiling.Core.csproj" />
   <Project Path="Unity.Core.Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.Mathematics.Extensions.csproj" />
   <Project Path="Unity.Entities.Graphics.Editor.csproj" />
   <Project Path="Unity.Transforms.Hybrid.csproj" />

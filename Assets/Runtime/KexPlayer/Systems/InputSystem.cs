@@ -103,12 +103,10 @@ namespace KexPlayer {
 
                 input.ValueRW.Move = new float2(x, y);
 
-                bool canLook = true;
-                if (SystemAPI.HasComponent<PlayerCapabilities>(entity)) {
-                    canLook = SystemAPI.GetComponent<PlayerCapabilities>(entity).CanLook;
-                }
+                bool inputLocked = SystemAPI.HasComponent<InputLockTimer>(entity)
+                    && SystemAPI.GetComponent<InputLockTimer>(entity).IsLocked(SystemAPI.GetSingleton<NetworkTime>().ServerTick);
 
-                if (canLook) {
+                if (!inputLocked) {
                     float2 mouseDelta = Mouse.current.delta.ReadValue();
                     float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
 

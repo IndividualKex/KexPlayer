@@ -40,7 +40,7 @@ namespace KexPlayer {
             new CharacterPhysicsJob {
                 Context = _context,
                 BaseContext = _baseContext,
-                CapabilitiesLookup = SystemAPI.GetComponentLookup<PlayerCapabilities>(true),
+                InputLockTimerLookup = SystemAPI.GetComponentLookup<InputLockTimer>(true),
                 CurrentTick = networkTime.ServerTick,
                 JumpBufferTicks = 10,
             }.ScheduleParallel();
@@ -51,7 +51,7 @@ namespace KexPlayer {
         public partial struct CharacterPhysicsJob : IJobEntity, IJobEntityChunkBeginEnd {
             public UpdateContext Context;
             public KinematicCharacterUpdateContext BaseContext;
-            [ReadOnly] public ComponentLookup<PlayerCapabilities> CapabilitiesLookup;
+            [ReadOnly] public ComponentLookup<InputLockTimer> InputLockTimerLookup;
             public NetworkTick CurrentTick;
             public uint JumpBufferTicks;
 
@@ -62,20 +62,15 @@ namespace KexPlayer {
                 RefRW<CharacterState> state,
                 RefRW<Input> input
             ) {
-                bool canMove = true;
-                bool canJump = true;
-                if (CapabilitiesLookup.TryGetComponent(entity, out var caps)) {
-                    canMove = caps.CanMove;
-                    canJump = caps.CanJump;
-                }
+                bool inputLocked = InputLockTimerLookup.TryGetComponent(entity, out var timer)
+                    && timer.IsLocked(CurrentTick);
 
                 var processor = new CharacterProcessor {
                     Kinematic = kinematic,
                     Config = config,
                     State = state,
                     Input = input,
-                    CanMove = canMove,
-                    CanJump = canJump,
+                    InputLocked = inputLocked,
                     CurrentTick = CurrentTick,
                     JumpBufferTicks = JumpBufferTicks,
                 };
@@ -96,8 +91,7 @@ namespace KexPlayer {
                 public CharacterConfig Config;
                 public RefRW<CharacterState> State;
                 public RefRW<Input> Input;
-                public bool CanMove;
-                public bool CanJump;
+                public bool InputLocked;
                 public NetworkTick CurrentTick;
                 public uint JumpBufferTicks;
 
@@ -129,12 +123,12 @@ namespace KexPlayer {
                     quaternion cameraYawRotation = quaternion.Euler(0f, math.radians(inputRef.ViewYawDegrees), 0f);
                     float3 cameraForward = MathUtilities.GetForwardFromRotation(cameraYawRotation);
                     float3 cameraRight = MathUtilities.GetRightFromRotation(cameraYawRotation);
-                    float3 moveVector = CanMove
-                        ? (inputRef.Move.y * cameraForward) + (inputRef.Move.x * cameraRight)
-                        : float3.zero;
+                    float3 moveVector = InputLocked
+                        ? float3.zero
+                        : (inputRef.Move.y * cameraForward) + (inputRef.Move.x * cameraRight);
                     moveVector = MathUtilities.ClampToMaxLength(moveVector, 1f);
 
-                    if (CanMove && math.lengthsq(inputRef.Move) > 0f) {
+                    if (!InputLocked && math.lengthsq(inputRef.Move) > 0f) {
                         stateRef.BodyYawDegrees = inputRef.ViewYawDegrees;
                     }
 
@@ -161,13 +155,13 @@ namespace KexPlayer {
                         float3 targetVelocity = moveVector * Config.GroundMaxSpeed;
                         CharacterControlUtilities.StandardGroundMove_Interpolated(ref bodyRef.RelativeVelocity, targetVelocity, Config.GroundedMovementSharpness, deltaTime, bodyRef.GroundingUp, bodyRef.GroundHit.Normal);
 
-                        if (CanJump && hasBufferedJump) {
+                        if (!InputLocked && hasBufferedJump) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                             stateRef.PendingJumpTick = default;
                         }
                     }
                     else {
-                        if (CanJump && hasBufferedJump && isInCoyoteTime) {
+                        if (!InputLocked && hasBufferedJump && isInCoyoteTime) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                             stateRef.LastGroundedTime = baseContext.Time.ElapsedTime - Config.CoyoteTimeDuration - 1.0;
                             stateRef.PendingJumpTick = default;

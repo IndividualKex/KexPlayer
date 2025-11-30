@@ -70,9 +70,7 @@ namespace KexPlayer {
                 AddComponent(entity, new CursorLock {
                     Value = true,
                 });
-                AddComponent(entity, new PlayerCapabilities {
-                    Flags = CapabilityFlags.All,
-                });
+                AddComponent<InputLockTimer>(entity);
             }
         }
     }

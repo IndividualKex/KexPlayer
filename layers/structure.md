@@ -35,8 +35,9 @@ KexPlayer/
 │   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
 │   │   │   │   ├── CursorLock.cs  # Cursor lock state
-│   │   │   │   ├── PlayerCapabilities.cs  # Capability flags (Move, Look, Jump)
+│   │   │   │   ├── InputLockTimer.cs  # Tick-based input lock
 │   │   │   │   ├── Head.cs  # Head entity link
+│   │   │   │   ├── HeadRotation.cs  # Replicated head rotation
 │   │   │   │   ├── Camera.cs  # Camera data
 │   │   │   │   ├── CameraShake.cs  # Camera shake
 │   │   │   │   ├── CameraOverride.cs  # Camera override
@@ -49,7 +50,8 @@ KexPlayer/
 │   │   │   │   ├── CameraApplySystem.cs  # Apply to Unity Camera
 │   │   │   │   ├── CharacterPhysicsSystem.cs  # Physics update
 │   │   │   │   ├── CharacterVariableUpdateSystem.cs  # Rotation update
-│   │   │   │   └── HeadUpdateSystem.cs  # Head rotation tracking
+│   │   │   │   ├── HeadUpdateSystem.cs  # Head rotation calculation
+│   │   │   │   └── HeadApplySystem.cs  # Apply head rotation to child
 │   │   │   └── Authoring/  # Player authoring
 │   │   │       ├── PlayerAuthoring.cs  # Main player setup
 │   │   │       ├── PlayerConfigAuthoring.cs  # Singleton with player prefab
@@ -76,9 +78,7 @@ KexPlayer/
 │   │   │   └── Systems/  # Connection and spawn systems
 │   │   └── Debug/  # Test utilities
 │   │       ├── context.md
-│   │       ├── Components/  # InputLockTimer
-│   │       ├── Systems/  # DebugInteractionSystem, InputLockTimerSystem
-│   │       └── Authoring/  # InputLockTimerAuthoring
+│   │       └── Systems/  # DebugInteractionSystem
 │   ├── Prefabs/  # Unity prefabs
 │   ├── Scenes/  # Unity scenes
 │   ├── Settings/  # Project settings

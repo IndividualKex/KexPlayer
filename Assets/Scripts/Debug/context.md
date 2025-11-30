@@ -2,27 +2,17 @@
 
 Test utilities for verifying networked player systems.
 
-## Purpose
-
-- Input lock timer to test buffered input across network latency
-- Interaction event consumption for testing
-
 ## Layout
 
 ```
 Debug/
 ├── context.md
-├── Components/
-│   └── InputLockTimer.cs  # Timer component (replicated)
-├── Systems/
-│   ├── InputLockTimerSystem.cs  # Disables capabilities while timer > 0
-│   └── DebugInteractionSystem.cs  # Consumes InteractEvents, sets timer
-└── Authoring/
-    └── InputLockTimerAuthoring.cs  # Add to player prefab
+├── FrameRateDebugger.cs  # Frame rate display
+└── Systems/
+    └── DebugInteractionSystem.cs  # Consumes InteractEvents, sets InputLockTimer
 ```
 
 ## Dependencies
 
-- KexPlayer (PlayerCapabilities)
+- KexPlayer (InputLockTimer)
 - KexInteract (InteractEvent)
-- Unity.NetCode
