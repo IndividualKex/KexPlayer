@@ -28,9 +28,10 @@ namespace KexPlayer {
         }
 
         protected override void OnUpdate() {
-            foreach (var (input, camera, cursorLock) in SystemAPI
+            foreach (var (input, camera, cursorLock, entity) in SystemAPI
                 .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>>()
                 .WithAll<GhostOwnerIsLocal>()
+                .WithEntityAccess()
             ) {
                 bool wasLocked = cursorLock.ValueRO.Value;
 
@@ -129,12 +130,19 @@ namespace KexPlayer {
 
                 input.ValueRW.Move = new float2(x, y);
 
-                float2 mouseDelta = Mouse.current.delta.ReadValue();
-                float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
+                bool canLook = true;
+                if (SystemAPI.HasComponent<PlayerCapabilities>(entity)) {
+                    canLook = SystemAPI.GetComponent<PlayerCapabilities>(entity).CanLook;
+                }
 
-                camera.ValueRW.YawDegrees += lookDelta.x;
-                camera.ValueRW.PitchDegrees -= lookDelta.y;
-                camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
+                if (canLook) {
+                    float2 mouseDelta = Mouse.current.delta.ReadValue();
+                    float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
+
+                    camera.ValueRW.YawDegrees += lookDelta.x;
+                    camera.ValueRW.PitchDegrees -= lookDelta.y;
+                    camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
+                }
 
                 input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                 input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;

@@ -1,8 +1,8 @@
 using Unity.Burst;
-using Unity.Entities;
 using Unity.Collections;
-using Unity.NetCode;
+using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using KexPlayer;
 
 namespace KexInteract {
@@ -22,6 +22,7 @@ namespace KexInteract {
             foreach (var (interacter, input, entity) in SystemAPI
                 .Query<Interacter, Input>()
                 .WithAll<GhostOwnerIsLocal, Simulate>()
+                .WithNone<InteractionBlocker>()
                 .WithEntityAccess()
             ) {
                 if (interacter.Target == Entity.Null) continue;

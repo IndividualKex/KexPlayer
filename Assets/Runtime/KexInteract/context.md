@@ -31,7 +31,7 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 ### Systems
 
 - **InteractTargetingSystem**: Raycasts, scores, updates Interacter.Target (PredictedFixedStepSimulationSystemGroup)
-- **InteractSystem**: Reads Input, checks ControlMask, creates InteractEvents (SimulationSystemGroup)
+- **InteractSystem**: Reads Input, checks ControlMask, creates InteractEvents; skips entities with InteractionBlocker (PredictedSimulationSystemGroup)
 - **InteractEventCleanupSystem**: Destroys InteractEvent entities
 
 ## Integration

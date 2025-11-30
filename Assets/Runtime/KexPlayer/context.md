@@ -23,6 +23,7 @@ KexPlayer/
 │   ├── PlayerConfig.cs  # Singleton with player prefab reference (for spawning)
 │   ├── Input.cs  # IInputComponentData (netcode-replicated input)
 │   ├── CursorLock.cs  # Client-side cursor lock state (bool)
+│   ├── PlayerCapabilities.cs  # Capability flags (Move, Look, Jump)
 │   ├── Head.cs  # Links head entity to player entity
 │   ├── HeadRotation.cs  # Replicated head rotation on player entity
 │   ├── Camera.cs  # Camera data (pitch, sensitivity, head entity, position, rotation)
@@ -53,7 +54,7 @@ KexPlayer/
 
 ## Entrypoints
 
-- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock). References HeadAuthoring to set Camera.HeadEntity
+- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock, PlayerCapabilities). References HeadAuthoring to set Camera.HeadEntity
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
 - **InputSystem**: Handles cursor lock (Escape/click/focus loss), captures input when locked, preserves view angles when unlocked
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
@@ -77,6 +78,7 @@ KexPlayer/
 - **PlayerConfig**: Singleton holding player prefab Entity reference for spawning (used by game-specific spawn systems)
 - **Input**: IInputComponentData with netcode replication (Move, ViewYawDegrees, ViewPitchDegrees, Jump, Crouch, Sprint, Fire, AltFire, Interact, AltInteract, Action1, Action2, Menu, ScrollUp, ScrollDown as InputEvents). Set to default when cursor unlocked
 - **CursorLock**: Client-side cursor lock state (bool with implicit operators). When false, input passthrough disabled
+- **PlayerCapabilities**: Capability flags controlling host-level actions (CapabilityFlags: Move, Look, Jump). External systems write; KexPlayer systems check before processing. Defaults to All
 - **Head**: Links head entity to player entity
 - **HeadRotation**: Replicated head rotation stored on player entity (LocalRotation as quaternion with [GhostField])
 - **Camera**: Camera state (YawDegrees, PitchDegrees, MinPitch, MaxPitch, LookSensitivity, HeadEntity, Position, Rotation)

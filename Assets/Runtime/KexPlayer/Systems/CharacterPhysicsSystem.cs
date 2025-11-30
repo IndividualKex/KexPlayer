@@ -6,6 +6,7 @@ using Unity.Burst.Intrinsics;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.NetCode;
+using Unity.Collections;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -13,12 +14,14 @@ namespace KexPlayer {
     public partial struct CharacterPhysicsSystem : ISystem {
         private UpdateContext _context;
         private KinematicCharacterUpdateContext _baseContext;
+        private ComponentLookup<PlayerCapabilities> _capabilitiesLookup;
 
         public void OnCreate(ref SystemState state) {
             _context = new UpdateContext();
             _context.OnSystemCreate(ref state);
             _baseContext = new KinematicCharacterUpdateContext();
             _baseContext.OnSystemCreate(ref state);
+            _capabilitiesLookup = state.GetComponentLookup<PlayerCapabilities>(true);
 
             var characterQuery = KinematicCharacterUtilities.GetBaseCharacterQueryBuilder()
                 .WithAll<CharacterConfig, CharacterState, Input>()
@@ -32,10 +35,12 @@ namespace KexPlayer {
         public void OnUpdate(ref SystemState state) {
             _context.OnSystemUpdate(ref state);
             _baseContext.OnSystemUpdate(ref state, SystemAPI.Time, SystemAPI.GetSingleton<PhysicsWorldSingleton>());
+            _capabilitiesLookup.Update(ref state);
 
             new CharacterPhysicsJob {
                 Context = _context,
                 BaseContext = _baseContext,
+                CapabilitiesLookup = _capabilitiesLookup,
             }.ScheduleParallel();
         }
 
@@ -44,6 +49,7 @@ namespace KexPlayer {
         public partial struct CharacterPhysicsJob : IJobEntity, IJobEntityChunkBeginEnd {
             public UpdateContext Context;
             public KinematicCharacterUpdateContext BaseContext;
+            [ReadOnly] public ComponentLookup<PlayerCapabilities> CapabilitiesLookup;
 
             public void Execute(
                 Entity entity,
@@ -52,12 +58,21 @@ namespace KexPlayer {
                 RefRW<CharacterState> state,
                 RefRW<Input> input
             ) {
+                bool canMove = true;
+                bool canJump = true;
+                if (CapabilitiesLookup.TryGetComponent(entity, out var caps)) {
+                    canMove = caps.CanMove;
+                    canJump = caps.CanJump;
+                }
+
                 var processor = new CharacterProcessor {
                     Self = entity,
                     Kinematic = kinematic,
                     Config = config,
                     State = state,
-                    Input = input
+                    Input = input,
+                    CanMove = canMove,
+                    CanJump = canJump,
                 };
 
                 processor.PhysicsUpdate(ref Context, ref BaseContext);
@@ -77,6 +92,8 @@ namespace KexPlayer {
                 public CharacterConfig Config;
                 public RefRW<CharacterState> State;
                 public RefRW<Input> Input;
+                public bool CanMove;
+                public bool CanJump;
 
                 public void PhysicsUpdate(ref UpdateContext context, ref KinematicCharacterUpdateContext baseContext) {
                     ref KinematicCharacterBody bodyRef = ref Kinematic.CharacterBody.ValueRW;
@@ -106,10 +123,12 @@ namespace KexPlayer {
                     quaternion cameraYawRotation = quaternion.Euler(0f, math.radians(inputRef.ViewYawDegrees), 0f);
                     float3 cameraForward = MathUtilities.GetForwardFromRotation(cameraYawRotation);
                     float3 cameraRight = MathUtilities.GetRightFromRotation(cameraYawRotation);
-                    float3 moveVector = (inputRef.Move.y * cameraForward) + (inputRef.Move.x * cameraRight);
+                    float3 moveVector = CanMove
+                        ? (inputRef.Move.y * cameraForward) + (inputRef.Move.x * cameraRight)
+                        : float3.zero;
                     moveVector = MathUtilities.ClampToMaxLength(moveVector, 1f);
 
-                    if (math.lengthsq(inputRef.Move) > 0f) {
+                    if (CanMove && math.lengthsq(inputRef.Move) > 0f) {
                         stateRef.BodyYawDegrees = inputRef.ViewYawDegrees;
                     }
 
@@ -129,12 +148,12 @@ namespace KexPlayer {
                         float3 targetVelocity = moveVector * Config.GroundMaxSpeed;
                         CharacterControlUtilities.StandardGroundMove_Interpolated(ref bodyRef.RelativeVelocity, targetVelocity, Config.GroundedMovementSharpness, deltaTime, bodyRef.GroundingUp, bodyRef.GroundHit.Normal);
 
-                        if (inputRef.Jump.IsSet) {
+                        if (CanJump && inputRef.Jump.IsSet) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                         }
                     }
                     else {
-                        if (inputRef.Jump.IsSet && isInCoyoteTime) {
+                        if (CanJump && inputRef.Jump.IsSet && isInCoyoteTime) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                             stateRef.LastGroundedTime = baseContext.Time.ElapsedTime - Config.CoyoteTimeDuration - 1.0;
                         }
