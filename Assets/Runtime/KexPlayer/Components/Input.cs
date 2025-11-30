@@ -10,6 +10,9 @@ namespace KexPlayer {
         public InputEvent Fire;
         public InputEvent AltFire;
 
+        public bool FireHeld;
+        public bool AltFireHeld;
+
         public InputEvent Interact;
         public InputEvent AltInteract;
 

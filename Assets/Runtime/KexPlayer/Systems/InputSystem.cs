@@ -82,7 +82,9 @@ namespace KexPlayer {
                 if (Keyboard.current.leftCtrlKey.wasPressedThisFrame) input.ValueRW.Crouch.Set();
                 if (Keyboard.current.leftShiftKey.wasPressedThisFrame) input.ValueRW.Sprint.Set();
                 if (!justLocked && Mouse.current.leftButton.wasPressedThisFrame) input.ValueRW.Fire.Set();
+                input.ValueRW.FireHeld = Mouse.current.leftButton.isPressed;
                 if (Mouse.current.rightButton.wasPressedThisFrame) input.ValueRW.AltFire.Set();
+                input.ValueRW.AltFireHeld = Mouse.current.rightButton.isPressed;
                 if (Keyboard.current.eKey.wasPressedThisFrame) input.ValueRW.Interact.Set();
                 if (Keyboard.current.fKey.wasPressedThisFrame) input.ValueRW.AltInteract.Set();
                 if (Keyboard.current.rKey.wasPressedThisFrame) input.ValueRW.Action1.Set();
