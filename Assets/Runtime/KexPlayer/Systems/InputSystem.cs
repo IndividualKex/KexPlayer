@@ -10,6 +10,8 @@ namespace KexPlayer {
     [AlwaysSynchronizeSystem]
     public partial class InputSystem : SystemBase {
         private bool _focusLost;
+        private bool _leftButtonConsumed;
+        private bool _rightButtonConsumed;
 
         protected override void OnCreate() {
             Application.focusChanged += OnFocusChanged;
@@ -69,6 +71,14 @@ namespace KexPlayer {
 
                 bool justLocked = !wasLocked && cursorLock.ValueRO.Value;
 
+                if (justLocked) {
+                    _leftButtonConsumed = Mouse.current.leftButton.isPressed;
+                    _rightButtonConsumed = Mouse.current.rightButton.isPressed;
+                }
+
+                if (!Mouse.current.leftButton.isPressed) _leftButtonConsumed = false;
+                if (!Mouse.current.rightButton.isPressed) _rightButtonConsumed = false;
+
                 if (!cursorLock.ValueRO.Value) {
                     input.ValueRW = default;
                     input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
@@ -82,9 +92,9 @@ namespace KexPlayer {
                 if (Keyboard.current.leftCtrlKey.wasPressedThisFrame) input.ValueRW.Crouch.Set();
                 if (Keyboard.current.leftShiftKey.wasPressedThisFrame) input.ValueRW.Sprint.Set();
                 if (!justLocked && Mouse.current.leftButton.wasPressedThisFrame) input.ValueRW.Fire.Set();
-                input.ValueRW.FireHeld = Mouse.current.leftButton.isPressed;
+                input.ValueRW.FireHeld = Mouse.current.leftButton.isPressed && !_leftButtonConsumed;
                 if (Mouse.current.rightButton.wasPressedThisFrame) input.ValueRW.AltFire.Set();
-                input.ValueRW.AltFireHeld = Mouse.current.rightButton.isPressed;
+                input.ValueRW.AltFireHeld = Mouse.current.rightButton.isPressed && !_rightButtonConsumed;
                 if (Keyboard.current.eKey.wasPressedThisFrame) input.ValueRW.Interact.Set();
                 if (Keyboard.current.fKey.wasPressedThisFrame) input.ValueRW.AltInteract.Set();
                 if (Keyboard.current.rKey.wasPressedThisFrame) input.ValueRW.Action1.Set();
