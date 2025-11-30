@@ -30,7 +30,7 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 
 ### Systems
 
-- **InteractTargetingSystem**: Raycasts, scores, updates Interacter.Target (PredictedFixedStepSimulationSystemGroup)
+- **InteractTargetingSystem**: Raycasts from head position/rotation, scores, updates Interacter.Target (PredictedFixedStepSimulationSystemGroup)
 - **InteractSystem**: Reads Input, checks ControlMask, creates InteractEvents with tick-based deduplication (PredictedSimulationSystemGroup)
 - **InteractEventCleanupSystem**: Destroys stale InteractEvent entities (InitializationSystemGroup)
 
@@ -47,4 +47,4 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 - Unity.Mathematics
 - Unity.Transforms
 - Unity.NetCode
-- KexPlayer (Input, Camera)
+- KexPlayer (Input, HeadRotation, Camera)

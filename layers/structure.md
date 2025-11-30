@@ -69,11 +69,16 @@ KexPlayer/
 │   │       ├── Systems/  # Outline rendering systems
 │   │       └── Authoring/  # Outline authoring
 │   ├── Scripts/  # Project-specific code
-│   │   └── Netcode/  # Multiplayer infrastructure (reference implementation)
+│   │   ├── Netcode/  # Multiplayer infrastructure (reference implementation)
+│   │   │   ├── context.md
+│   │   │   ├── Bootstrap/  # Client-server world creation
+│   │   │   ├── Components/  # ClientConnectionRequest RPC
+│   │   │   └── Systems/  # Connection and spawn systems
+│   │   └── Debug/  # Test utilities
 │   │       ├── context.md
-│   │       ├── Bootstrap/  # Client-server world creation
-│   │       ├── Components/  # ClientConnectionRequest RPC
-│   │       └── Systems/  # Connection and spawn systems
+│   │       ├── Components/  # InputLockTimer
+│   │       ├── Systems/  # DebugInteractionSystem, InputLockTimerSystem
+│   │       └── Authoring/  # InputLockTimerAuthoring
 │   ├── Prefabs/  # Unity prefabs
 │   ├── Scenes/  # Unity scenes
 │   ├── Settings/  # Project settings

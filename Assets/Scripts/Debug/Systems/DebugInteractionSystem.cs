@@ -1,18 +1,22 @@
 using KexInteract;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-public partial class DebugInteractionSystem : SystemBase {
-    protected override void OnUpdate() {
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[BurstCompile]
+public partial struct DebugInteractionSystem : ISystem {
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state) {
+        var inputLockTimerLookup = SystemAPI.GetComponentLookup<InputLockTimer>();
         using var ecb = new EntityCommandBuffer(Allocator.Temp);
-        foreach (var (evt, entity) in SystemAPI
-            .Query<InteractEvent>()
-            .WithEntityAccess()
-        ) {
-            UnityEngine.Debug.Log($"Interacted with {evt.Target} by {evt.Sender} using interaction {evt.Interaction}");
+        foreach (var (evt, entity) in SystemAPI.Query<InteractEvent>().WithEntityAccess()) {
+            if (inputLockTimerLookup.TryGetRefRW(evt.Sender, out var timer)) {
+                timer.ValueRW.RemainingTime = 0.2f;
+            }
             ecb.DestroyEntity(entity);
         }
-        ecb.Playback(EntityManager);
+        ecb.Playback(state.EntityManager);
     }
 }

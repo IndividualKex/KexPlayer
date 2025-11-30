@@ -4,6 +4,7 @@ using Unity.Physics;
 using Unity.Mathematics;
 using Unity.Collections;
 using Unity.NetCode;
+using Unity.Transforms;
 using KexPlayer;
 
 namespace KexInteract {
@@ -21,14 +22,22 @@ namespace KexInteract {
         [BurstCompile]
         public void OnUpdate(ref SystemState state) {
             var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+            var localToWorldLookup = SystemAPI.GetComponentLookup<LocalToWorld>(true);
             var hits = new NativeList<RaycastHit>(Allocator.Temp);
 
-            foreach (var (interacter, camera) in SystemAPI
-                .Query<RefRW<Interacter>, Camera>()
+            foreach (var (interacter, headRotation, camera) in SystemAPI
+                .Query<RefRW<Interacter>, HeadRotation, Camera>()
             ) {
+                if (camera.HeadEntity == Entity.Null) continue;
+                if (!localToWorldLookup.HasComponent(camera.HeadEntity)) continue;
+
+                var headTransform = localToWorldLookup[camera.HeadEntity];
+                float3 position = headTransform.Position;
+                quaternion rotation = headRotation.LocalRotation;
+
                 var ray = new RaycastInput {
-                    Start = camera.Position,
-                    End = camera.Position + math.forward(camera.Rotation) * interacter.ValueRO.InteractDistance,
+                    Start = position,
+                    End = position + math.forward(rotation) * interacter.ValueRO.InteractDistance,
                     Filter = new CollisionFilter {
                         BelongsTo = ~0u,
                         CollidesWith = (uint)interacter.ValueRO.PhysicsMask.value,
@@ -40,7 +49,7 @@ namespace KexInteract {
                 hits.Clear();
                 if (collisionWorld.CastRay(ray, ref hits)) {
                     float bestScore = 0f;
-                    float3 rayDirection = math.forward(camera.Rotation);
+                    float3 rayDirection = math.forward(rotation);
 
                     for (int i = 0; i < hits.Length; i++) {
                         var hit = hits[i];
@@ -50,7 +59,7 @@ namespace KexInteract {
                         var candidate = SystemAPI.GetComponent<Interactable>(hit.Entity);
                         if ((candidate.InteractionMask & interacter.ValueRO.InteractionMask) == 0) continue;
 
-                        float score = CalculateInteractionScore(hit.Position, camera.Position, rayDirection);
+                        float score = CalculateInteractionScore(hit.Position, position, rayDirection);
 
                         if (score > bestScore) {
                             bestScore = score;
