@@ -73,6 +73,7 @@ namespace KexPlayer {
                 AddComponent(entity, new PlayerCapabilities {
                     Flags = CapabilityFlags.All,
                 });
+                AddComponent<InputBuffer>(entity);
             }
         }
     }

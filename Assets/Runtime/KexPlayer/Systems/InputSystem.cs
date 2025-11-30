@@ -28,8 +28,11 @@ namespace KexPlayer {
         }
 
         protected override void OnUpdate() {
-            foreach (var (input, camera, cursorLock, entity) in SystemAPI
-                .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>>()
+            double elapsedTime = SystemAPI.Time.ElapsedTime;
+            float bufferDuration = InputBuffer.DefaultDuration;
+
+            foreach (var (input, camera, cursorLock, buffer, entity) in SystemAPI
+                .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>, RefRW<InputBuffer>>()
                 .WithAll<GhostOwnerIsLocal>()
                 .WithEntityAccess()
             ) {
@@ -69,36 +72,37 @@ namespace KexPlayer {
                     continue;
                 }
 
+                if (Keyboard.current.spaceKey.wasPressedThisFrame) buffer.ValueRW.JumpTime = elapsedTime;
+                if (Keyboard.current.leftCtrlKey.wasPressedThisFrame) buffer.ValueRW.CrouchTime = elapsedTime;
+                if (Keyboard.current.leftShiftKey.wasPressedThisFrame) buffer.ValueRW.SprintTime = elapsedTime;
+                if (!justLocked && Mouse.current.leftButton.wasPressedThisFrame) buffer.ValueRW.FireTime = elapsedTime;
+                if (Mouse.current.rightButton.wasPressedThisFrame) buffer.ValueRW.AltFireTime = elapsedTime;
+                if (Keyboard.current.eKey.wasPressedThisFrame) buffer.ValueRW.InteractTime = elapsedTime;
+                if (Keyboard.current.fKey.wasPressedThisFrame) buffer.ValueRW.AltInteractTime = elapsedTime;
+                if (Keyboard.current.rKey.wasPressedThisFrame) buffer.ValueRW.Action1Time = elapsedTime;
+                if (Keyboard.current.tKey.wasPressedThisFrame) buffer.ValueRW.Action2Time = elapsedTime;
+                if (Keyboard.current.escapeKey.wasPressedThisFrame) buffer.ValueRW.MenuTime = elapsedTime;
+                if (Keyboard.current.digit1Key.wasPressedThisFrame) buffer.ValueRW.Digit1Time = elapsedTime;
+                if (Keyboard.current.digit2Key.wasPressedThisFrame) buffer.ValueRW.Digit2Time = elapsedTime;
+                if (Keyboard.current.digit3Key.wasPressedThisFrame) buffer.ValueRW.Digit3Time = elapsedTime;
+                if (Keyboard.current.digit4Key.wasPressedThisFrame) buffer.ValueRW.Digit4Time = elapsedTime;
+                if (Keyboard.current.digit5Key.wasPressedThisFrame) buffer.ValueRW.Digit5Time = elapsedTime;
+                if (Keyboard.current.digit6Key.wasPressedThisFrame) buffer.ValueRW.Digit6Time = elapsedTime;
+                if (Keyboard.current.digit7Key.wasPressedThisFrame) buffer.ValueRW.Digit7Time = elapsedTime;
+                if (Keyboard.current.digit8Key.wasPressedThisFrame) buffer.ValueRW.Digit8Time = elapsedTime;
+                if (Keyboard.current.digit9Key.wasPressedThisFrame) buffer.ValueRW.Digit9Time = elapsedTime;
+                if (Keyboard.current.digit0Key.wasPressedThisFrame) buffer.ValueRW.Digit0Time = elapsedTime;
+
                 input.ValueRW.Jump = default;
-                if (Keyboard.current.spaceKey.wasPressedThisFrame) input.ValueRW.Jump.Set();
-
                 input.ValueRW.Crouch = default;
-                if (Keyboard.current.leftCtrlKey.wasPressedThisFrame) input.ValueRW.Crouch.Set();
-
                 input.ValueRW.Sprint = default;
-                if (Keyboard.current.leftShiftKey.wasPressedThisFrame) input.ValueRW.Sprint.Set();
-
                 input.ValueRW.Fire = default;
-                if (!justLocked && Mouse.current.leftButton.wasPressedThisFrame) input.ValueRW.Fire.Set();
-
                 input.ValueRW.AltFire = default;
-                if (Mouse.current.rightButton.wasPressedThisFrame) input.ValueRW.AltFire.Set();
-
                 input.ValueRW.Interact = default;
-                if (Keyboard.current.eKey.wasPressedThisFrame) input.ValueRW.Interact.Set();
-
                 input.ValueRW.AltInteract = default;
-                if (Keyboard.current.fKey.wasPressedThisFrame) input.ValueRW.AltInteract.Set();
-
                 input.ValueRW.Action1 = default;
-                if (Keyboard.current.rKey.wasPressedThisFrame) input.ValueRW.Action1.Set();
-
                 input.ValueRW.Action2 = default;
-                if (Keyboard.current.tKey.wasPressedThisFrame) input.ValueRW.Action2.Set();
-
                 input.ValueRW.Menu = default;
-                if (Keyboard.current.escapeKey.wasPressedThisFrame) input.ValueRW.Menu.Set();
-
                 input.ValueRW.Digit1 = default;
                 input.ValueRW.Digit2 = default;
                 input.ValueRW.Digit3 = default;
@@ -109,16 +113,27 @@ namespace KexPlayer {
                 input.ValueRW.Digit8 = default;
                 input.ValueRW.Digit9 = default;
                 input.ValueRW.Digit0 = default;
-                if (Keyboard.current.digit1Key.wasPressedThisFrame) input.ValueRW.Digit1.Set();
-                if (Keyboard.current.digit2Key.wasPressedThisFrame) input.ValueRW.Digit2.Set();
-                if (Keyboard.current.digit3Key.wasPressedThisFrame) input.ValueRW.Digit3.Set();
-                if (Keyboard.current.digit4Key.wasPressedThisFrame) input.ValueRW.Digit4.Set();
-                if (Keyboard.current.digit5Key.wasPressedThisFrame) input.ValueRW.Digit5.Set();
-                if (Keyboard.current.digit6Key.wasPressedThisFrame) input.ValueRW.Digit6.Set();
-                if (Keyboard.current.digit7Key.wasPressedThisFrame) input.ValueRW.Digit7.Set();
-                if (Keyboard.current.digit8Key.wasPressedThisFrame) input.ValueRW.Digit8.Set();
-                if (Keyboard.current.digit9Key.wasPressedThisFrame) input.ValueRW.Digit9.Set();
-                if (Keyboard.current.digit0Key.wasPressedThisFrame) input.ValueRW.Digit0.Set();
+
+                if ((elapsedTime - buffer.ValueRO.JumpTime) <= bufferDuration) input.ValueRW.Jump.Set();
+                if ((elapsedTime - buffer.ValueRO.CrouchTime) <= bufferDuration) input.ValueRW.Crouch.Set();
+                if ((elapsedTime - buffer.ValueRO.SprintTime) <= bufferDuration) input.ValueRW.Sprint.Set();
+                if ((elapsedTime - buffer.ValueRO.FireTime) <= bufferDuration) input.ValueRW.Fire.Set();
+                if ((elapsedTime - buffer.ValueRO.AltFireTime) <= bufferDuration) input.ValueRW.AltFire.Set();
+                if ((elapsedTime - buffer.ValueRO.InteractTime) <= bufferDuration) input.ValueRW.Interact.Set();
+                if ((elapsedTime - buffer.ValueRO.AltInteractTime) <= bufferDuration) input.ValueRW.AltInteract.Set();
+                if ((elapsedTime - buffer.ValueRO.Action1Time) <= bufferDuration) input.ValueRW.Action1.Set();
+                if ((elapsedTime - buffer.ValueRO.Action2Time) <= bufferDuration) input.ValueRW.Action2.Set();
+                if ((elapsedTime - buffer.ValueRO.MenuTime) <= bufferDuration) input.ValueRW.Menu.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit1Time) <= bufferDuration) input.ValueRW.Digit1.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit2Time) <= bufferDuration) input.ValueRW.Digit2.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit3Time) <= bufferDuration) input.ValueRW.Digit3.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit4Time) <= bufferDuration) input.ValueRW.Digit4.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit5Time) <= bufferDuration) input.ValueRW.Digit5.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit6Time) <= bufferDuration) input.ValueRW.Digit6.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit7Time) <= bufferDuration) input.ValueRW.Digit7.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit8Time) <= bufferDuration) input.ValueRW.Digit8.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit9Time) <= bufferDuration) input.ValueRW.Digit9.Set();
+                if ((elapsedTime - buffer.ValueRO.Digit0Time) <= bufferDuration) input.ValueRW.Digit0.Set();
 
                 float x = 0f;
                 float y = 0f;
@@ -147,11 +162,14 @@ namespace KexPlayer {
                 input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                 input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;
 
+                float scrollY = Mouse.current.scroll.ReadValue().y;
+                if (scrollY > 0) buffer.ValueRW.ScrollUpTime = elapsedTime;
+                else if (scrollY < 0) buffer.ValueRW.ScrollDownTime = elapsedTime;
+
                 input.ValueRW.ScrollUp = default;
                 input.ValueRW.ScrollDown = default;
-                float scrollY = Mouse.current.scroll.ReadValue().y;
-                if (scrollY > 0) input.ValueRW.ScrollUp.Set();
-                else if (scrollY < 0) input.ValueRW.ScrollDown.Set();
+                if ((elapsedTime - buffer.ValueRO.ScrollUpTime) <= bufferDuration) input.ValueRW.ScrollUp.Set();
+                if ((elapsedTime - buffer.ValueRO.ScrollDownTime) <= bufferDuration) input.ValueRW.ScrollDown.Set();
             }
         }
     }

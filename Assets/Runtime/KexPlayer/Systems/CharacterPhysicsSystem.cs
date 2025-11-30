@@ -1,12 +1,12 @@
 using Unity.Burst;
-using Unity.Entities;
-using Unity.Physics;
-using Unity.CharacterController;
 using Unity.Burst.Intrinsics;
-using Unity.Mathematics;
-using Unity.Transforms;
-using Unity.NetCode;
+using Unity.CharacterController;
 using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
+using Unity.Physics;
+using Unity.Transforms;
 
 namespace KexPlayer {
     [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -14,14 +14,12 @@ namespace KexPlayer {
     public partial struct CharacterPhysicsSystem : ISystem {
         private UpdateContext _context;
         private KinematicCharacterUpdateContext _baseContext;
-        private ComponentLookup<PlayerCapabilities> _capabilitiesLookup;
 
         public void OnCreate(ref SystemState state) {
             _context = new UpdateContext();
             _context.OnSystemCreate(ref state);
             _baseContext = new KinematicCharacterUpdateContext();
             _baseContext.OnSystemCreate(ref state);
-            _capabilitiesLookup = state.GetComponentLookup<PlayerCapabilities>(true);
 
             var characterQuery = KinematicCharacterUtilities.GetBaseCharacterQueryBuilder()
                 .WithAll<CharacterConfig, CharacterState, Input>()
@@ -35,12 +33,12 @@ namespace KexPlayer {
         public void OnUpdate(ref SystemState state) {
             _context.OnSystemUpdate(ref state);
             _baseContext.OnSystemUpdate(ref state, SystemAPI.Time, SystemAPI.GetSingleton<PhysicsWorldSingleton>());
-            _capabilitiesLookup.Update(ref state);
 
             new CharacterPhysicsJob {
                 Context = _context,
                 BaseContext = _baseContext,
-                CapabilitiesLookup = _capabilitiesLookup,
+                CapabilitiesLookup = SystemAPI.GetComponentLookup<PlayerCapabilities>(true),
+                InputBufferLookup = SystemAPI.GetComponentLookup<InputBuffer>(false),
             }.ScheduleParallel();
         }
 
@@ -50,6 +48,7 @@ namespace KexPlayer {
             public UpdateContext Context;
             public KinematicCharacterUpdateContext BaseContext;
             [ReadOnly] public ComponentLookup<PlayerCapabilities> CapabilitiesLookup;
+            [NativeDisableParallelForRestriction] public ComponentLookup<InputBuffer> InputBufferLookup;
 
             public void Execute(
                 Entity entity,
@@ -73,6 +72,7 @@ namespace KexPlayer {
                     Input = input,
                     CanMove = canMove,
                     CanJump = canJump,
+                    InputBufferLookup = InputBufferLookup,
                 };
 
                 processor.PhysicsUpdate(ref Context, ref BaseContext);
@@ -94,6 +94,7 @@ namespace KexPlayer {
                 public RefRW<Input> Input;
                 public bool CanMove;
                 public bool CanJump;
+                public ComponentLookup<InputBuffer> InputBufferLookup;
 
                 public void PhysicsUpdate(ref UpdateContext context, ref KinematicCharacterUpdateContext baseContext) {
                     ref KinematicCharacterBody bodyRef = ref Kinematic.CharacterBody.ValueRW;
@@ -150,12 +151,14 @@ namespace KexPlayer {
 
                         if (CanJump && inputRef.Jump.IsSet) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
+                            ClearJumpBuffer();
                         }
                     }
                     else {
                         if (CanJump && inputRef.Jump.IsSet && isInCoyoteTime) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                             stateRef.LastGroundedTime = baseContext.Time.ElapsedTime - Config.CoyoteTimeDuration - 1.0;
+                            ClearJumpBuffer();
                         }
 
                         float3 airAcceleration = moveVector * Config.AirAcceleration;
@@ -218,6 +221,14 @@ namespace KexPlayer {
                         in velocityProjectionHits,
                         originalVelocityDirection,
                         Config.StepAndSlopeHandling.ConstrainVelocityToGroundPlane);
+                }
+
+                private void ClearJumpBuffer() {
+                    if (InputBufferLookup.HasComponent(Self)) {
+                        var buffer = InputBufferLookup[Self];
+                        buffer.JumpTime = double.MinValue;
+                        InputBufferLookup[Self] = buffer;
+                    }
                 }
             }
         }

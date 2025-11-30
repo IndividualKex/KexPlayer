@@ -34,6 +34,7 @@ KexPlayer/
 │   │   │   │   ├── Player.cs  # Player tag
 │   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
+│   │   │   │   ├── InputBuffer.cs  # Input buffering timestamps
 │   │   │   │   ├── CursorLock.cs  # Cursor lock state
 │   │   │   │   ├── PlayerCapabilities.cs  # Capability flags (Move, Look, Jump)
 │   │   │   │   ├── Head.cs  # Head entity link
