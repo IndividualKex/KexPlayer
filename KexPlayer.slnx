@@ -49,7 +49,6 @@
   <Project Path="Unity.InputSystem.ForUI.csproj" />
   <Project Path="Unity.AI.Navigation.csproj" />
   <Project Path="Unity.Collections.CodeGen.csproj" />
-  <Project Path="KexInteract.csproj" />
   <Project Path="Unity.Entities.Hybrid.HybridComponents.csproj" />
   <Project Path="Unity.Mathematics.Editor.csproj" />
   <Project Path="Unity.NetCode.Editor.Drawers.csproj" />
@@ -63,8 +62,8 @@
   <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
   <Project Path="Unity.Profiling.Core.csproj" />
-  <Project Path="Unity.Core.Editor.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Unity.Core.Editor.csproj" />
   <Project Path="Unity.Mathematics.Extensions.csproj" />
   <Project Path="Unity.Entities.Graphics.Editor.csproj" />
   <Project Path="Unity.Transforms.Hybrid.csproj" />

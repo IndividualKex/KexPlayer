@@ -1,6 +1,6 @@
 # KexPlayer
 
-First-person player controller for Unity DOTS ECS with input, camera, and character physics.
+First-person player controller for Unity DOTS ECS with input, camera, character physics, and targeting.
 
 ## Layout
 
@@ -14,7 +14,9 @@ KexPlayer/
 │   ├── PlayerConfig.cs  # Singleton with player prefab
 │   ├── Input.cs  # IInputComponentData (netcode-replicated)
 │   ├── CursorLock.cs  # Client-side cursor lock state
-│   ├── InputLockTimer.cs  # Tick-based input lock (NetworkTick UnlockTick)
+│   ├── InputLockTimer.cs  # Tick-based input lock (ghost component)
+│   ├── Target.cs  # Current targeting result (client-only)
+│   ├── TargetingConfig.cs  # Targeting distance and layer mask
 │   ├── Head.cs  # Links head entity to player
 │   ├── HeadRotation.cs  # Replicated head rotation
 │   ├── Camera.cs  # Camera state (pitch, yaw, sensitivity)
@@ -24,6 +26,7 @@ KexPlayer/
 │   └── CharacterState.cs  # Runtime state (grounded, yaw, jump buffer)
 ├── Systems/
 │   ├── InputSystem.cs  # Cursor lock, input capture (GhostInputSystemGroup)
+│   ├── TargetingSystem.cs  # Raycast targeting (FixedStepSimulationSystemGroup)
 │   ├── CameraSystem.cs  # Camera positioning
 │   ├── CameraShakeSystem.cs  # Shake offset
 │   ├── CameraApplySystem.cs  # Apply to Unity Camera.main
@@ -40,15 +43,17 @@ KexPlayer/
 
 ## Key Components
 
-- **InputLockTimer**: Tick-based lock via `IsLocked(NetworkTick)`. Set by external systems to disable movement/look/jump
+- **InputLockTimer**: Ghost component with `IsLocked(NetworkTick)`. Set by external systems to disable movement
 - **Input**: Netcode-replicated input with Move, View angles, and InputEvents (Jump, Fire, Interact, etc.)
+- **Target**: Client-only targeting result from raycast (not synced for prediction simplicity)
 
 ## System Flow
 
 1. **Input** (GhostInputSystemGroup): Cursor lock, keyboard/mouse capture
 2. **Physics** (PredictedFixedStepSimulationSystemGroup): Movement relative to camera, respects InputLockTimer
-3. **Variable Update** (PredictedSimulationSystemGroup): Body/head rotation
-4. **Presentation** (PresentationSystemGroup): Camera shake, positioning, apply to Unity Camera
+3. **Targeting** (FixedStepSimulationSystemGroup): Raycast from head, updates Target
+4. **Variable Update** (PredictedSimulationSystemGroup): Body/head rotation
+5. **Presentation** (PresentationSystemGroup): Camera shake, positioning, apply to Unity Camera
 
 ## Dependencies
 

@@ -35,7 +35,9 @@ KexPlayer/
 │   │   │   │   ├── PlayerConfig.cs  # Singleton with player prefab reference
 │   │   │   │   ├── Input.cs  # Input data (netcode-replicated)
 │   │   │   │   ├── CursorLock.cs  # Cursor lock state
-│   │   │   │   ├── InputLockTimer.cs  # Tick-based input lock
+│   │   │   │   ├── InputLockTimer.cs  # Tick-based input lock (ghost)
+│   │   │   │   ├── Target.cs  # Targeting result (client-only)
+│   │   │   │   ├── TargetingConfig.cs  # Targeting configuration
 │   │   │   │   ├── Head.cs  # Head entity link
 │   │   │   │   ├── HeadRotation.cs  # Replicated head rotation
 │   │   │   │   ├── Camera.cs  # Camera data
@@ -45,6 +47,7 @@ KexPlayer/
 │   │   │   │   └── CharacterState.cs  # Character state
 │   │   │   ├── Systems/  # All player systems
 │   │   │   │   ├── InputSystem.cs  # Input capture and cursor lock
+│   │   │   │   ├── TargetingSystem.cs  # Raycast targeting
 │   │   │   │   ├── CameraSystem.cs  # Camera positioning
 │   │   │   │   ├── CameraShakeSystem.cs  # Camera shake
 │   │   │   │   ├── CameraApplySystem.cs  # Apply to Unity Camera

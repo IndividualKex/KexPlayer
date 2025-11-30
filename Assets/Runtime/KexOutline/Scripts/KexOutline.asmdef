@@ -9,7 +9,7 @@
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
         "Unity.NetCode",
-        "KexInteract"
+        "KexPlayer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

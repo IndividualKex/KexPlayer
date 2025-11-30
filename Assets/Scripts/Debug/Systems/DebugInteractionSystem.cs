@@ -1,37 +1,39 @@
-using KexInteract;
 using KexPlayer;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[UpdateAfter(typeof(InteractSystem))]
-[BurstCompile]
 public partial struct DebugInteractionSystem : ISystem {
-    private const uint LockDurationTicks = 12;
+    private const uint LockDurationTicks = 30;
 
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<NetworkTime>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var currentTick = networkTime.ServerTick;
+
+        foreach (var (input, inputLockTimer) in SystemAPI
+            .Query<Input, RefRW<InputLockTimer>>()
+            .WithAll<Simulate>()
+        ) {
+            if (!input.Fire.IsSet) continue;
+
+            inputLockTimer.ValueRW.LockTick = currentTick;
+            inputLockTimer.ValueRW.LockDurationTicks = LockDurationTicks;
+        }
+
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
-        var currentTick = networkTime.ServerTick;
-        var inputLockTimerLookup = SystemAPI.GetComponentLookup<InputLockTimer>();
-        using var ecb = new EntityCommandBuffer(Allocator.Temp);
+        foreach (var (interaction, input, target) in SystemAPI
+            .Query<RefRW<DebugInteraction>, Input, Target>()
+            .WithAll<Simulate>()
+        ) {
+            if (!input.Fire.IsSet) continue;
+            if (target.Value == Entity.Null) continue;
 
-        foreach (var (evt, entity) in SystemAPI.Query<InteractEvent>().WithEntityAccess()) {
-            if (inputLockTimerLookup.TryGetRefRW(evt.Sender, out var timer)) {
-                var unlockTick = currentTick;
-                unlockTick.Add(LockDurationTicks);
-                timer.ValueRW.UnlockTick = unlockTick;
-            }
-            ecb.DestroyEntity(entity);
+            interaction.ValueRW.Tick = currentTick;
         }
-        ecb.Playback(state.EntityManager);
     }
 }

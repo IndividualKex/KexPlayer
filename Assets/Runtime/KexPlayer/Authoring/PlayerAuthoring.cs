@@ -26,6 +26,10 @@ namespace KexPlayer {
         public float MaxPitch = 89f;
         public float LookInputSensitivity = 0.1f;
 
+        [Header("Targeting")]
+        public float TargetingDistance = 3f;
+        public LayerMask TargetingLayerMask = ~0;
+
         public class Baker : Baker<PlayerAuthoring> {
             public override void Bake(PlayerAuthoring authoring) {
                 KinematicCharacterUtilities.BakeCharacter(this, authoring.gameObject, authoring.CharacterProperties);
@@ -71,6 +75,11 @@ namespace KexPlayer {
                     Value = true,
                 });
                 AddComponent<InputLockTimer>(entity);
+                AddComponent<Target>(entity);
+                AddComponent(entity, new TargetingConfig {
+                    Distance = authoring.TargetingDistance,
+                    PhysicsLayerMask = (uint)authoring.TargetingLayerMask.value,
+                });
             }
         }
     }

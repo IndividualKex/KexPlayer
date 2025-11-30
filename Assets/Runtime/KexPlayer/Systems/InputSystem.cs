@@ -103,17 +103,12 @@ namespace KexPlayer {
 
                 input.ValueRW.Move = new float2(x, y);
 
-                bool inputLocked = SystemAPI.HasComponent<InputLockTimer>(entity)
-                    && SystemAPI.GetComponent<InputLockTimer>(entity).IsLocked(SystemAPI.GetSingleton<NetworkTime>().ServerTick);
+                float2 mouseDelta = Mouse.current.delta.ReadValue();
+                float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
 
-                if (!inputLocked) {
-                    float2 mouseDelta = Mouse.current.delta.ReadValue();
-                    float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
-
-                    camera.ValueRW.YawDegrees += lookDelta.x;
-                    camera.ValueRW.PitchDegrees -= lookDelta.y;
-                    camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
-                }
+                camera.ValueRW.YawDegrees += lookDelta.x;
+                camera.ValueRW.PitchDegrees -= lookDelta.y;
+                camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
 
                 input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                 input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;

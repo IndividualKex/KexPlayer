@@ -145,8 +145,8 @@ GameObject:
   m_Component:
   - component: {fileID: 818871299641244920}
   - component: {fileID: 4455125623428390173}
-  - component: {fileID: 1492830232136425597}
   - component: {fileID: 8344565017376942781}
+  - component: {fileID: -7388749912850923660}
   - component: {fileID: 2968423352759476060}
   - component: {fileID: 4732858588490778053}
   m_Layer: 6
@@ -237,23 +237,10 @@ MonoBehaviour:
   MinPitch: -89
   MaxPitch: 89
   LookInputSensitivity: 0.1
---- !u!114 &1492830232136425597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2723394380130368490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e39fb5c40602e9045b35c454c513fedf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: KexInteract::KexInteract.InteracterAuthoring
-  InteractDistance: 3
-  LayerMask:
+  TargetingDistance: 3
+  TargetingLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
-  InteractionMask: 1
+    m_Bits: 1
 --- !u!114 &8344565017376942781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +253,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Entities.Hybrid::Unity.Entities.Hybrid.Baking.LinkedEntityGroupAuthoring
+--- !u!114 &-7388749912850923660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2723394380130368490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee445cf4b7c20ea47840814dfb8a65fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DebugInteractionAuthoring
 --- !u!114 &2968423352759476060
 MonoBehaviour:
   m_ObjectHideFlags: 0

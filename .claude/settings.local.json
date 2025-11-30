@@ -5,7 +5,9 @@
       "WebSearch",
       "WebFetch(domain:docs.unity3d.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:discussions.unity.com)"
+      "WebFetch(domain:discussions.unity.com)",
+      "Bash(find:*)",
+      "Bash(xargs:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\dylan\\Documents\\Games\\KexBuild"

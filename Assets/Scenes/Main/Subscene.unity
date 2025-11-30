@@ -664,7 +664,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1797512173}
-  - component: {fileID: 1797512169}
   - component: {fileID: 1797512174}
   - component: {fileID: 1797512172}
   - component: {fileID: 1797512171}
@@ -676,20 +675,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1797512169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797512168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e112db68bc34fa43a8462a6200fbbb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: KexInteract::KexInteract.InteractableAuthoring
-  InteractionMask: 1
-  ControlMask: 255
 --- !u!65 &1797512170
 BoxCollider:
   m_ObjectHideFlags: 0

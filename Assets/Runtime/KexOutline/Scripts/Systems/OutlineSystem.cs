@@ -1,8 +1,8 @@
+using KexPlayer;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Graphics;
-using KexInteract;
 
 namespace KexOutline {
     [BurstCompile]
@@ -15,17 +15,17 @@ namespace KexOutline {
         public void OnUpdate(ref SystemState state) {
             var config = SystemAPI.GetSingleton<OutlineConfig>();
 
-            using var interacted = new NativeHashSet<Entity>(16, Allocator.Temp);
-            foreach (var interactTarget in SystemAPI.Query<RefRO<Interacter>>()) {
-                if (interactTarget.ValueRO.Target == Entity.Null) continue;
-                interacted.Add(interactTarget.ValueRO.Target);
+            using var targeted = new NativeHashSet<Entity>(16, Allocator.Temp);
+            foreach (var target in SystemAPI.Query<RefRO<Target>>()) {
+                if (target.ValueRO.Value == Entity.Null) continue;
+                targeted.Add(target.ValueRO.Value);
             }
 
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
             using var map = new NativeHashMap<Entity, int>(16, Allocator.Temp);
-            foreach (var (outlineRenderer, entity) in SystemAPI.Query<OutlineRenderer>().WithEntityAccess().WithAll<Interactable>()) {
+            foreach (var (outlineRenderer, entity) in SystemAPI.Query<OutlineRenderer>().WithEntityAccess()) {
                 Entity renderer = outlineRenderer.Renderer;
-                int layer = interacted.Contains(entity) ? config.OutlineLayer : outlineRenderer.RendererLayer;
+                int layer = targeted.Contains(entity) ? config.OutlineLayer : outlineRenderer.RendererLayer;
                 map.Add(entity, layer);
 
                 if (renderer == Entity.Null || !state.EntityManager.HasComponent<RenderFilterSettings>(renderer)) continue;

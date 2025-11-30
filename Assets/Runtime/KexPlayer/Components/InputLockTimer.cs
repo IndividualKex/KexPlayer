@@ -4,10 +4,10 @@ using Unity.NetCode;
 namespace KexPlayer {
     [GhostComponent]
     public struct InputLockTimer : IComponentData {
-        [GhostField]
-        public NetworkTick UnlockTick;
+        [GhostField] public NetworkTick LockTick;
+        [GhostField] public uint LockDurationTicks;
 
         public bool IsLocked(NetworkTick currentTick) =>
-            UnlockTick.IsValid && !currentTick.IsNewerThan(UnlockTick);
+            LockTick.IsValid && currentTick.TicksSince(LockTick) < LockDurationTicks;
     }
 }

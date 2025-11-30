@@ -7,12 +7,12 @@ Test utilities for verifying networked player systems.
 ```
 Debug/
 ├── context.md
-├── FrameRateDebugger.cs  # Frame rate display
+├── Authoring/  # Debug entity setup
+├── Components/  # Debug components
 └── Systems/
-    └── DebugInteractionSystem.cs  # Consumes InteractEvents, sets InputLockTimer
+    └── DebugInteractionSystem.cs  # Sets InputLockTimer on Fire input
 ```
 
 ## Dependencies
 
-- KexPlayer (InputLockTimer)
-- KexInteract (InteractEvent)
+- KexPlayer (Input, InputLockTimer, Target)
