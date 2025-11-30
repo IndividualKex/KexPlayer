@@ -22,7 +22,6 @@ KexPlayer/
 │   ├── Player.cs  # Player tag component
 │   ├── PlayerConfig.cs  # Singleton with player prefab reference (for spawning)
 │   ├── Input.cs  # IInputComponentData (netcode-replicated input)
-│   ├── InputBuffer.cs  # Client-side input buffering timestamps
 │   ├── CursorLock.cs  # Client-side cursor lock state (bool)
 │   ├── PlayerCapabilities.cs  # Capability flags (Move, Look, Jump)
 │   ├── Head.cs  # Links head entity to player entity
@@ -31,7 +30,7 @@ KexPlayer/
 │   ├── CameraShake.cs  # Shake effect state
 │   ├── CameraOverride.cs  # Override position/rotation with restoration
 │   ├── CharacterConfig.cs  # Immutable movement configuration
-│   └── CharacterState.cs  # Runtime character state
+│   └── CharacterState.cs  # Runtime character state (includes PendingJumpTick for buffering)
 ├── Systems/
 │   ├── InputSystem.cs  # GhostInputSystemGroup, cursor lock handling and input capture
 │   ├── CameraSystem.cs  # Camera positioning logic
@@ -50,12 +49,12 @@ KexPlayer/
 
 ## Scope
 
-- **In-scope**: Complete first-person player controller, input capture, view control, camera positioning, character physics, jumping, multiplayer input replication, camera effects, networked head rotation, input buffering
+- **In-scope**: Complete first-person player controller, input capture, view control, camera positioning, character physics, jumping, multiplayer input replication, camera effects, networked head rotation
 - **Out-of-scope**: Third-person cameras, game-specific interactions, rebinding UI, inventory systems
 
 ## Entrypoints
 
-- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock, PlayerCapabilities, InputBuffer). References HeadAuthoring to set Camera.HeadEntity
+- **PlayerAuthoring**: Bakes player entity with all required components (Player, Input, Camera, CharacterConfig, CharacterState, HeadRotation, CursorLock, PlayerCapabilities). References HeadAuthoring to set Camera.HeadEntity
 - **HeadAuthoring**: Bakes head entity with Head component linking to player
 - **InputSystem**: Handles cursor lock (Escape/click/focus loss), captures input when locked, preserves view angles when unlocked
 - **CharacterPhysicsSystem**: Reads Input (including ViewYawDegrees) to calculate movement direction relative to camera, updates body yaw when moving
@@ -86,8 +85,7 @@ KexPlayer/
 - **CameraShake**: Optional shake effect (Offset, Duration, RemainingTime, Magnitude, RandomSeed)
 - **CameraOverride**: Optional override (Position, Rotation, OriginalRotation, IsActive)
 - **CharacterConfig**: Immutable movement config (speeds, gravity, jump height, coyote time, step/slope handling)
-- **CharacterState**: Runtime state (LastGroundedTime, BodyYawDegrees)
-- **InputBuffer**: Client-side input buffering timestamps for all discrete inputs (150ms buffer duration). Cleared when input is consumed
+- **CharacterState**: Runtime state (LastGroundedTime, BodyYawDegrees, PendingJumpTick for jump buffering)
 
 ## Dependencies
 

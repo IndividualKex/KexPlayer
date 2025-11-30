@@ -27,6 +27,7 @@ namespace KexPlayer {
             state.RequireForUpdate(characterQuery);
 
             state.RequireForUpdate<PhysicsWorldSingleton>();
+            state.RequireForUpdate<NetworkTime>();
         }
 
         [BurstCompile]
@@ -34,11 +35,14 @@ namespace KexPlayer {
             _context.OnSystemUpdate(ref state);
             _baseContext.OnSystemUpdate(ref state, SystemAPI.Time, SystemAPI.GetSingleton<PhysicsWorldSingleton>());
 
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+
             new CharacterPhysicsJob {
                 Context = _context,
                 BaseContext = _baseContext,
                 CapabilitiesLookup = SystemAPI.GetComponentLookup<PlayerCapabilities>(true),
-                InputBufferLookup = SystemAPI.GetComponentLookup<InputBuffer>(false),
+                CurrentTick = networkTime.ServerTick,
+                JumpBufferTicks = 10,
             }.ScheduleParallel();
         }
 
@@ -48,7 +52,8 @@ namespace KexPlayer {
             public UpdateContext Context;
             public KinematicCharacterUpdateContext BaseContext;
             [ReadOnly] public ComponentLookup<PlayerCapabilities> CapabilitiesLookup;
-            [NativeDisableParallelForRestriction] public ComponentLookup<InputBuffer> InputBufferLookup;
+            public NetworkTick CurrentTick;
+            public uint JumpBufferTicks;
 
             public void Execute(
                 Entity entity,
@@ -65,14 +70,14 @@ namespace KexPlayer {
                 }
 
                 var processor = new CharacterProcessor {
-                    Self = entity,
                     Kinematic = kinematic,
                     Config = config,
                     State = state,
                     Input = input,
                     CanMove = canMove,
                     CanJump = canJump,
-                    InputBufferLookup = InputBufferLookup,
+                    CurrentTick = CurrentTick,
+                    JumpBufferTicks = JumpBufferTicks,
                 };
 
                 processor.PhysicsUpdate(ref Context, ref BaseContext);
@@ -87,14 +92,14 @@ namespace KexPlayer {
             }
 
             private struct CharacterProcessor : IKinematicCharacterProcessor<UpdateContext> {
-                public Entity Self;
                 public KinematicCharacterAspect Kinematic;
                 public CharacterConfig Config;
                 public RefRW<CharacterState> State;
                 public RefRW<Input> Input;
                 public bool CanMove;
                 public bool CanJump;
-                public ComponentLookup<InputBuffer> InputBufferLookup;
+                public NetworkTick CurrentTick;
+                public uint JumpBufferTicks;
 
                 public void PhysicsUpdate(ref UpdateContext context, ref KinematicCharacterUpdateContext baseContext) {
                     ref KinematicCharacterBody bodyRef = ref Kinematic.CharacterBody.ValueRW;
@@ -142,6 +147,13 @@ namespace KexPlayer {
                         stateRef.LastGroundedTime = baseContext.Time.ElapsedTime;
                     }
 
+                    if (inputRef.Jump.IsSet) {
+                        stateRef.PendingJumpTick = CurrentTick;
+                    }
+
+                    bool hasBufferedJump = stateRef.PendingJumpTick.IsValid &&
+                        CurrentTick.TicksSince(stateRef.PendingJumpTick) <= JumpBufferTicks;
+
                     double timeSinceUngrounded = baseContext.Time.ElapsedTime - stateRef.LastGroundedTime;
                     bool isInCoyoteTime = timeSinceUngrounded <= Config.CoyoteTimeDuration;
 
@@ -149,16 +161,16 @@ namespace KexPlayer {
                         float3 targetVelocity = moveVector * Config.GroundMaxSpeed;
                         CharacterControlUtilities.StandardGroundMove_Interpolated(ref bodyRef.RelativeVelocity, targetVelocity, Config.GroundedMovementSharpness, deltaTime, bodyRef.GroundingUp, bodyRef.GroundHit.Normal);
 
-                        if (CanJump && inputRef.Jump.IsSet) {
+                        if (CanJump && hasBufferedJump) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
-                            ClearJumpBuffer();
+                            stateRef.PendingJumpTick = default;
                         }
                     }
                     else {
-                        if (CanJump && inputRef.Jump.IsSet && isInCoyoteTime) {
+                        if (CanJump && hasBufferedJump && isInCoyoteTime) {
                             CharacterControlUtilities.StandardJump(ref bodyRef, bodyRef.GroundingUp * Config.JumpSpeed, true, bodyRef.GroundingUp);
                             stateRef.LastGroundedTime = baseContext.Time.ElapsedTime - Config.CoyoteTimeDuration - 1.0;
-                            ClearJumpBuffer();
+                            stateRef.PendingJumpTick = default;
                         }
 
                         float3 airAcceleration = moveVector * Config.AirAcceleration;
@@ -221,14 +233,6 @@ namespace KexPlayer {
                         in velocityProjectionHits,
                         originalVelocityDirection,
                         Config.StepAndSlopeHandling.ConstrainVelocityToGroundPlane);
-                }
-
-                private void ClearJumpBuffer() {
-                    if (InputBufferLookup.HasComponent(Self)) {
-                        var buffer = InputBufferLookup[Self];
-                        buffer.JumpTime = double.MinValue;
-                        InputBufferLookup[Self] = buffer;
-                    }
                 }
             }
         }

@@ -4,9 +4,8 @@ using Unity.NetCode;
 namespace KexPlayer {
     [GhostComponent]
     public struct CharacterState : IComponentData {
-        [GhostField]
-        public double LastGroundedTime;
-        [GhostField]
-        public float BodyYawDegrees;
+        [GhostField] public double LastGroundedTime;
+        [GhostField] public float BodyYawDegrees;
+        [GhostField] public NetworkTick PendingJumpTick;
     }
 }

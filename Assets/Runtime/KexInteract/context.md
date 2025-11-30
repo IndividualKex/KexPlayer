@@ -24,15 +24,15 @@ Raycast-based interaction system for Unity DOTS/ECS with control-specific maskin
 ### Components
 
 - **Interactable**: InteractionMask (filtering) + ControlMask (allowed controls)
-- **Interacter**: Target, HitPosition, InteractDistance, PhysicsMask, InteractionMask
-- **InteractEvent**: Target, Sender, Interaction (byte index), HitPosition
+- **Interacter**: Target, HitPosition, InteractDistance, PhysicsMask, InteractionMask, LastXxxTick (GhostFields for deduplication)
+- **InteractEvent**: Target, Sender, Interaction (byte index), HitPosition, Tick (NetworkTick)
 - **InteractionBlocker**: Tag to disable interactions
 
 ### Systems
 
 - **InteractTargetingSystem**: Raycasts, scores, updates Interacter.Target (PredictedFixedStepSimulationSystemGroup)
-- **InteractSystem**: Reads Input, checks ControlMask, creates InteractEvents; skips entities with InteractionBlocker (PredictedSimulationSystemGroup)
-- **InteractEventCleanupSystem**: Destroys InteractEvent entities
+- **InteractSystem**: Reads Input, checks ControlMask, creates InteractEvents with tick-based deduplication (PredictedSimulationSystemGroup)
+- **InteractEventCleanupSystem**: Destroys stale InteractEvent entities (InitializationSystemGroup)
 
 ## Integration
 

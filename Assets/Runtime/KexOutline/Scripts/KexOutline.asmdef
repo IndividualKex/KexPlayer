@@ -8,6 +8,7 @@
         "Unity.Collections",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
+        "Unity.NetCode",
         "KexInteract"
     ],
     "includePlatforms": [],

@@ -1,10 +1,8 @@
 using KexInteract;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.NetCode;
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[UpdateAfter(typeof(InteractSystem))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 public partial class DebugInteractionSystem : SystemBase {
     protected override void OnUpdate() {
         using var ecb = new EntityCommandBuffer(Allocator.Temp);

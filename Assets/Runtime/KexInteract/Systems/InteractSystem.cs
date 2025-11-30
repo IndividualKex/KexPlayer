@@ -1,9 +1,9 @@
+using KexPlayer;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using KexPlayer;
 
 namespace KexInteract {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -18,63 +18,76 @@ namespace KexInteract {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
-            var inputBufferLookup = SystemAPI.GetComponentLookup<InputBuffer>(false);
+            var currentTick = networkTime.ServerTick;
 
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (interacter, input, entity) in SystemAPI
-                .Query<Interacter, Input>()
-                .WithAll<GhostOwnerIsLocal, Simulate>()
+                .Query<RefRW<Interacter>, Input>()
+                .WithAll<Simulate>()
                 .WithNone<InteractionBlocker>()
                 .WithEntityAccess()
             ) {
-                if (interacter.Target == Entity.Null) continue;
+                if (interacter.ValueRO.Target == Entity.Null) continue;
 
-                var interactable = SystemAPI.GetComponent<Interactable>(interacter.Target);
+                var interactable = SystemAPI.GetComponent<Interactable>(interacter.ValueRO.Target);
 
                 if (input.Fire.IsSet && (interactable.ControlMask & ControlMask.Fire) == ControlMask.Fire) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 0, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.Fire);
+                    if (currentTick != interacter.ValueRO.LastFireTick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 0, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastFireTick = currentTick;
+                    }
                 }
                 if (input.AltFire.IsSet && (interactable.ControlMask & ControlMask.AltFire) == ControlMask.AltFire) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 1, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.AltFire);
+                    if (currentTick != interacter.ValueRO.LastAltFireTick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 1, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastAltFireTick = currentTick;
+                    }
                 }
                 if (input.Interact.IsSet && (interactable.ControlMask & ControlMask.Interact) == ControlMask.Interact) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 2, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.Interact);
+                    if (currentTick != interacter.ValueRO.LastInteractTick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 2, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastInteractTick = currentTick;
+                    }
                 }
                 if (input.AltInteract.IsSet && (interactable.ControlMask & ControlMask.AltInteract) == ControlMask.AltInteract) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 3, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.AltInteract);
+                    if (currentTick != interacter.ValueRO.LastAltInteractTick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 3, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastAltInteractTick = currentTick;
+                    }
                 }
                 if (input.Action1.IsSet && (interactable.ControlMask & ControlMask.Action1) == ControlMask.Action1) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 4, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.Action1);
+                    if (currentTick != interacter.ValueRO.LastAction1Tick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 4, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastAction1Tick = currentTick;
+                    }
                 }
                 if (input.Action2.IsSet && (interactable.ControlMask & ControlMask.Action2) == ControlMask.Action2) {
-                    CreateInteractEvent(ecb, interacter.Target, entity, 5, interacter.HitPosition);
-                    ClearInputBuffer(ref inputBufferLookup, entity, InputBufferField.Action2);
+                    if (currentTick != interacter.ValueRO.LastAction2Tick) {
+                        CreateInteractEvent(ecb, interacter.ValueRO.Target, entity, 5, interacter.ValueRO.HitPosition, currentTick);
+                        interacter.ValueRW.LastAction2Tick = currentTick;
+                    }
                 }
             }
             ecb.Playback(state.EntityManager);
         }
 
-        private Entity CreateInteractEvent(EntityCommandBuffer ecb, Entity target, Entity sender, byte interaction, float3 hitPosition) {
+        private Entity CreateInteractEvent(
+            EntityCommandBuffer ecb,
+            Entity target,
+            Entity sender,
+            byte interaction,
+            float3 hitPosition,
+            NetworkTick tick
+        ) {
             Entity eventEntity = ecb.CreateEntity();
             ecb.AddComponent(eventEntity, new InteractEvent {
                 Target = target,
                 Sender = sender,
                 Interaction = interaction,
-                HitPosition = hitPosition
+                HitPosition = hitPosition,
+                Tick = tick,
             });
             return eventEntity;
-        }
-
-        private static void ClearInputBuffer(ref ComponentLookup<InputBuffer> lookup, Entity entity, InputBufferField field) {
-            if (!lookup.HasComponent(entity)) return;
-            var buffer = lookup[entity];
-            buffer.Clear(field);
-            lookup[entity] = buffer;
         }
     }
 }
