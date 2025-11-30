@@ -37,13 +37,13 @@ namespace KexPlayer {
 
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
-            new CharacterPhysicsJob {
+            state.Dependency = new CharacterPhysicsJob {
                 Context = _context,
                 BaseContext = _baseContext,
                 InputLockTimerLookup = SystemAPI.GetComponentLookup<InputLockTimer>(true),
                 CurrentTick = networkTime.ServerTick,
                 JumpBufferTicks = 10,
-            }.ScheduleParallel();
+            }.ScheduleParallel(state.Dependency);
         }
 
         [BurstCompile]

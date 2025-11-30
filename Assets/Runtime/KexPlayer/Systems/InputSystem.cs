@@ -29,11 +29,17 @@ namespace KexPlayer {
         }
 
         protected override void OnUpdate() {
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            var currentTick = networkTime.ServerTick;
+
             foreach (var (input, camera, cursorLock, entity) in SystemAPI
                 .Query<RefRW<Input>, RefRW<Camera>, RefRW<CursorLock>>()
                 .WithAll<GhostOwnerIsLocal>()
                 .WithEntityAccess()
             ) {
+                bool inputLocked = SystemAPI.HasComponent<InputLockTimer>(entity)
+                    && SystemAPI.GetComponent<InputLockTimer>(entity).IsLocked(currentTick);
+
                 bool wasLocked = cursorLock.ValueRO.Value;
 
                 if (_focusLost) {
@@ -103,12 +109,14 @@ namespace KexPlayer {
 
                 input.ValueRW.Move = new float2(x, y);
 
-                float2 mouseDelta = Mouse.current.delta.ReadValue();
-                float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
+                if (!inputLocked) {
+                    float2 mouseDelta = Mouse.current.delta.ReadValue();
+                    float2 lookDelta = mouseDelta * camera.ValueRO.LookSensitivity;
 
-                camera.ValueRW.YawDegrees += lookDelta.x;
-                camera.ValueRW.PitchDegrees -= lookDelta.y;
-                camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
+                    camera.ValueRW.YawDegrees += lookDelta.x;
+                    camera.ValueRW.PitchDegrees -= lookDelta.y;
+                    camera.ValueRW.PitchDegrees = math.clamp((float)camera.ValueRO.PitchDegrees, (float)camera.ValueRO.MinPitch, (float)camera.ValueRO.MaxPitch);
+                }
 
                 input.ValueRW.ViewYawDegrees = camera.ValueRO.YawDegrees;
                 input.ValueRW.ViewPitchDegrees = camera.ValueRO.PitchDegrees;

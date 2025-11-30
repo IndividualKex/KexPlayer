@@ -43,17 +43,17 @@ KexPlayer/
 
 ## Key Components
 
-- **InputLockTimer**: Ghost component with `IsLocked(NetworkTick)`. Set by external systems to disable movement
+- **InputLockTimer**: Ghost component with `IsLocked(NetworkTick)`. Disables movement and look when locked
 - **Input**: Netcode-replicated input with Move, View angles, and InputEvents (Jump, Fire, Interact, etc.)
 - **Target**: Client-only targeting result from raycast (not synced for prediction simplicity)
 
 ## System Flow
 
-1. **Input** (GhostInputSystemGroup): Cursor lock, keyboard/mouse capture
-2. **Physics** (PredictedFixedStepSimulationSystemGroup): Movement relative to camera, respects InputLockTimer
+1. **Input** (GhostInputSystemGroup): Cursor lock, keyboard/mouse capture, respects InputLockTimer for look
+2. **Physics** (PredictedFixedStepSimulationSystemGroup): Movement, respects InputLockTimer
 3. **Targeting** (FixedStepSimulationSystemGroup): Raycast from head, updates Target
-4. **Variable Update** (PredictedSimulationSystemGroup): Body/head rotation
-5. **Presentation** (PresentationSystemGroup): Camera shake, positioning, apply to Unity Camera
+4. **Head Update** (PredictedSimulationSystemGroup): Head rotation, respects InputLockTimer
+5. **Presentation** (PresentationSystemGroup): Camera positioning, syncs from HeadRotation when locked
 
 ## Dependencies
 
