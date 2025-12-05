@@ -34,6 +34,7 @@
   <Project Path="Unity.Scenes.Editor.csproj" />
   <Project Path="KexOutline.csproj" />
   <Project Path="Unity.Serialization.csproj" />
+  <Project Path="Unity.Numerics.Linear.Dense.csproj" />
   <Project Path="Unity.Burst.Editor.csproj" />
   <Project Path="KexPlayer.csproj" />
   <Project Path="Unity.Networking.Transport.csproj" />
@@ -46,6 +47,7 @@
   <Project Path="Unity.AI.Navigation.Editor.csproj" />
   <Project Path="Unity.NetCode.Authoring.Hybrid.csproj" />
   <Project Path="Unity.Physics.Editor.csproj" />
+  <Project Path="Unity.Numerics.Linear.Solvers.Lowlevel.csproj" />
   <Project Path="Unity.InputSystem.ForUI.csproj" />
   <Project Path="Unity.AI.Navigation.csproj" />
   <Project Path="Unity.Collections.CodeGen.csproj" />
@@ -60,11 +62,14 @@
   <Project Path="Unity.Entities.Build.csproj" />
   <Project Path="Unity.CollabProxy.Editor.csproj" />
   <Project Path="Unity.InputSystem.TestFramework.csproj" />
+  <Project Path="Unity.Numerics.Memory.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
   <Project Path="Unity.Profiling.Core.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Unity.Numerics.Random.csproj" />
   <Project Path="Unity.Core.Editor.csproj" />
   <Project Path="Unity.Mathematics.Extensions.csproj" />
+  <Project Path="Unity.Numerics.Linear.Sparse.csproj" />
   <Project Path="Unity.Entities.Graphics.Editor.csproj" />
   <Project Path="Unity.Transforms.Hybrid.csproj" />
   <Project Path="Unity.Serialization.Editor.csproj" />
@@ -75,4 +80,5 @@
   <Project Path="Unity.ScriptableBuildPipeline.csproj" />
   <Project Path="Unity.PlasticSCM.Editor.Entities.csproj" />
   <Project Path="Unity.Collections.Editor.csproj" />
+  <Project Path="Unity.Numerics.Linear.csproj" />
 </Solution>
