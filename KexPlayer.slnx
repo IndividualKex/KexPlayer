@@ -53,7 +53,7 @@
   <Project Path="Unity.Collections.CodeGen.csproj" />
   <Project Path="Unity.Entities.Hybrid.HybridComponents.csproj" />
   <Project Path="Unity.Mathematics.Editor.csproj" />
-  <Project Path="Unity.NetCode.Editor.Drawers.csproj" />
+  <Project Path="Unity.NetCode.Drawers.Editor.csproj" />
   <Project Path="Unity.CharacterController.csproj" />
   <Project Path="Unity.VisualScripting.SettingsProvider.Editor.csproj" />
   <Project Path="Unity.NetCode.Physics.Hybrid.csproj" />
